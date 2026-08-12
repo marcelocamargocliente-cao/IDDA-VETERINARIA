@@ -4,8 +4,8 @@ import { MessageCircle, X } from 'lucide-react'
 export const WhatsAppFloat: React.FC = () => {
   const [tooltipOpen, setTooltipOpen] = useState(true)
 
-  const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta ou tirar dúvidas com a equipe da IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`
+  const whatsappMessage = encodeURIComponent('Olá! Vim pelo site e preciso de atendimento na IDDA Veterinária.')
+  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">

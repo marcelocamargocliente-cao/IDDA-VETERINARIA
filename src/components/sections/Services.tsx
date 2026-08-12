@@ -61,7 +61,7 @@ const renderServiceIcon = (iconName: string) => {
 
 export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
   const whatsappMessage = encodeURIComponent('Olá! Gostaria de mais informações sobre os serviços da IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`
+  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
 
   const activeServices = services.filter(s => s.active)
 

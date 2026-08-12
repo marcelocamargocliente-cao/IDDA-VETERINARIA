@@ -32,31 +32,34 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
   ]
 
   const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5511999999999?text=${whatsappMessage}`
+  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
+  const whatsappEmergency = `https://wa.me/5521986260484?text=${encodeURIComponent('Preciso de atendimento de urgência para meu pet!')}`
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
       {/* Top Banner with Emergency Contact */}
-      <div className="bg-stone-900 text-stone-200 text-xs sm:text-sm py-1.5 px-4">
+      <div className="bg-[#062614] text-stone-200 text-xs sm:text-sm py-1.5 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-4 text-stone-300">
-            <span className="flex items-center gap-1.5 font-medium">
-              <Clock className="w-3.5 h-3.5 text-verde-500" />
+          <div className="flex items-center gap-4 text-[#dcf5e7]">
+            <span className="flex items-center gap-1.5 font-medium text-xs">
+              <Clock className="w-3.5 h-3.5 text-[#1B7A3E]" />
               Atendimento Clínico & Pronto Socorro 24h
             </span>
-            <span className="hidden md:flex items-center gap-1.5 text-stone-400">
-              <MapPin className="w-3.5 h-3.5 text-verde-500" />
-              Rua Principal, 1000 - Centro
+            <span className="hidden md:flex items-center gap-1.5 text-xs text-[#dcf5e7]/80">
+              <MapPin className="w-3.5 h-3.5 text-[#1B7A3E]" />
+              Caminho do Tutóia, Lt. 37 - Cosmos, RJ
             </span>
           </div>
 
           <div className="flex items-center gap-3 ml-auto sm:ml-0">
             <a 
-              href="tel:11999999999" 
-              className="flex items-center gap-1.5 bg-urgencia/90 hover:bg-urgencia text-white px-2.5 py-0.5 rounded-full font-semibold text-xs tracking-wide transition-colors animate-pulse"
+              href={whatsappEmergency}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-[#E63329] hover:bg-red-700 text-white px-2.5 py-0.5 rounded-full font-bold text-xs tracking-wide transition-colors urgencia-pulse"
             >
               <ShieldAlert className="w-3.5 h-3.5" />
-              Urgência 24h: (11) 99999-9999
+              Urgência 24h: (21) 98626-0484
             </a>
 
             <button
@@ -145,24 +148,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
               ))}
             </div>
 
-            <div className="pt-3 border-t border-stone-100 flex flex-col gap-2">
+            <div className="pt-3 border-t border-[#dcf5e7] flex flex-col gap-2">
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 bg-verde-500 hover:bg-verde-600 text-white py-2.5 rounded-xl font-semibold text-center text-sm shadow-md"
+                className="w-full flex items-center justify-center gap-2 bg-[#1B7A3E] hover:bg-[#166633] text-white py-2.5 rounded-2xl font-bold uppercase tracking-wider text-center text-xs shadow-md"
               >
                 <Calendar className="w-4 h-4" />
                 Agendar Consulta pelo WhatsApp
               </a>
 
               <a
-                href="tel:11999999999"
-                className="w-full flex items-center justify-center gap-2 bg-urgencia text-white py-2.5 rounded-xl font-semibold text-center text-sm shadow-md"
+                href={whatsappEmergency}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-[#E63329] text-white py-2.5 rounded-full font-bold uppercase tracking-wider text-center text-xs urgencia-pulse shadow-md"
               >
                 <Phone className="w-4 h-4" />
-                Ligar Urgência (11) 99999-9999
+                Ligar Plantão (21) 98626-0484
               </a>
             </div>
           </div>
