@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-verde-50: #f0faf4;
+  --color-verde-100: #dcf5e7;
+  --color-verde-500: #1B7A3E;
+  --color-verde-600: #166633;
+  --color-verde-700: #0F5A2C;
+  --color-verde-800: #0a3d1e;
+  --color-verde-900: #062614;
+
+  --color-urgencia: #E63329;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}

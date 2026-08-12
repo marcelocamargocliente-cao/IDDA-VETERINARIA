@@ -1,0 +1,6 @@
+{
+  "name": "IDDA Veterinária",
+  "description": "Website e portal da Clínica Veterinária IDDA com emergência 24h, agendamentos, serviços, galeria, depoimentos e área administrativa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
