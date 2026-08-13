@@ -3,9 +3,11 @@ import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { Hero } from './components/sections/Hero'
 import { Services } from './components/sections/Services'
-import { PhotoCarousel } from './components/sections/PhotoCarousel'
 import { WhyIDDA } from './components/sections/WhyIDDA'
+import { Differentials } from './components/sections/Differentials'
+import { PhotoCarousel } from './components/sections/PhotoCarousel'
 import { Testimonials } from './components/sections/Testimonials'
+import { CtaSection } from './components/sections/CtaSection'
 import { Location } from './components/sections/Location'
 import { WhatsAppFloat } from './components/sections/WhatsAppFloat'
 import { AdminLogin } from './components/admin/AdminLogin'
@@ -47,7 +49,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-stone-800 font-body selection:bg-verde-100 selection:text-verde-900">
+    <div className="min-h-screen flex flex-col bg-[#F5F1ED] text-[#1A1A1A] font-body selection:bg-[#6B8E6F]/20 selection:text-[#5A7A5F]">
       
       {/* Header Navigation */}
       <Navbar
@@ -59,9 +61,11 @@ export default function App() {
       <main className="flex-grow">
         <Hero heroPhoto={heroPhoto} />
         <Services services={services} loading={servicesLoading} />
-        <PhotoCarousel photos={photos} loading={photosLoading} />
         <WhyIDDA />
+        <Differentials />
+        <PhotoCarousel photos={photos} loading={photosLoading} />
         <Testimonials testimonials={testimonials} loading={testimonialsLoading} />
+        <CtaSection />
         <Location />
       </main>
 
@@ -90,3 +94,4 @@ export default function App() {
     </div>
   )
 }
+

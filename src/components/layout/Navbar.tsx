@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Phone, Heart, Menu, X, ShieldAlert, Lock, MapPin, Clock, Calendar } from 'lucide-react'
+import { Phone, Heart, Menu, X, Lock, MapPin, Clock, Calendar, MessageCircle } from 'lucide-react'
 
 interface NavbarProps {
   onOpenAdmin: () => void
@@ -25,49 +25,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
   const navLinks = [
     { name: 'Início', href: '#hero' },
     { name: 'Serviços', href: '#servicos' },
-    { name: 'Galeria', href: '#galeria' },
+    { name: 'Por que a IDDA', href: '#por-que-idda' },
     { name: 'Diferenciais', href: '#diferenciais' },
+    { name: 'Galeria', href: '#galeria' },
     { name: 'Depoimentos', href: '#depoimentos' },
     { name: 'Localização', href: '#localizacao' },
   ]
 
   const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
   const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
-  const whatsappEmergency = `https://wa.me/5521986260484?text=${encodeURIComponent('Preciso de atendimento de urgência para meu pet!')}`
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-      {/* Top Banner with Emergency Contact */}
-      <div className="bg-[#062614] text-stone-200 text-xs sm:text-sm py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-4 text-[#dcf5e7]">
+      {/* Top Notification / Info Bar */}
+      <div className="bg-[#1A1A1A] text-[#F5F1ED] text-xs py-2 px-4 border-b border-[#2A2A2A]">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-6 text-[#D4C5B9]">
             <span className="flex items-center gap-1.5 font-medium text-xs">
-              <Clock className="w-3.5 h-3.5 text-[#1B7A3E]" />
-              Atendimento Clínico & Pronto Socorro 24h
+              <Clock className="w-3.5 h-3.5 text-[#6B8E6F]" />
+              Atendimento e Plantão Veterinário
             </span>
-            <span className="hidden md:flex items-center gap-1.5 text-xs text-[#dcf5e7]/80">
-              <MapPin className="w-3.5 h-3.5 text-[#1B7A3E]" />
+            <span className="hidden md:flex items-center gap-1.5 text-xs text-[#D4C5B9]/80">
+              <MapPin className="w-3.5 h-3.5 text-[#6B8E6F]" />
               Estrada do Tutóia, 520 lj. 2 - Cosmos, RJ
             </span>
           </div>
 
-          <div className="flex items-center gap-3 ml-auto sm:ml-0">
+          <div className="flex items-center gap-4 ml-auto sm:ml-0">
             <a 
-              href={whatsappEmergency}
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 bg-[#E63329] hover:bg-red-700 text-white px-2.5 py-0.5 rounded-full font-bold text-xs tracking-wide transition-colors urgencia-pulse"
+              className="flex items-center gap-1.5 text-[#F5F1ED] hover:text-[#6B8E6F] font-semibold text-xs transition-colors"
             >
-              <ShieldAlert className="w-3.5 h-3.5" />
-              Urgência 24h: (21) 98626-0484
+              <Phone className="w-3.5 h-3.5 text-[#6B8E6F]" />
+              <span>(21) 98626-0484</span>
             </a>
 
             <button
               onClick={onOpenAdmin}
-              className="flex items-center gap-1 text-stone-400 hover:text-white transition-colors text-xs ml-2 pl-2 border-l border-stone-800"
-              title={isAdminLoggedIn ? "Painel do Administrador" : "Acesso Administrativo"}
+              className="flex items-center gap-1 text-[#888888] hover:text-[#F5F1ED] transition-colors text-xs pl-3 border-l border-[#333333]"
+              title={isAdminLoggedIn ? "Painel Administrativo" : "Acesso Admin"}
             >
-              <Lock className={`w-3 h-3 ${isAdminLoggedIn ? 'text-emerald-400' : ''}`} />
+              <Lock className={`w-3 h-3 ${isAdminLoggedIn ? 'text-[#6B8E6F]' : ''}`} />
               <span className="hidden sm:inline">{isAdminLoggedIn ? 'Painel Admin' : 'Admin'}</span>
             </button>
           </div>
@@ -77,56 +77,57 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
       {/* Main Navbar */}
       <nav className={`transition-all duration-300 ${
         scrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-md py-3' 
-          : 'bg-white/80 backdrop-blur-sm border-b border-stone-200/60 py-4'
+          ? 'bg-[#FFFFFF]/95 backdrop-blur-md shadow-sm py-3 border-b border-[#D4C5B9]/50' 
+          : 'bg-[#F5F1ED]/90 backdrop-blur-sm border-b border-[#D4C5B9]/40 py-4'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Logo */}
+          
+          {/* Brand Logo */}
           <a href="#hero" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-verde-500 flex items-center justify-center text-white shadow-md shadow-verde-500/20 group-hover:bg-verde-600 transition-all transform group-hover:scale-105">
-              <Heart className="w-6 h-6 fill-white stroke-verde-500" />
+            <div className="w-10 h-10 rounded-xl bg-[#6B8E6F] flex items-center justify-center text-white shadow-sm group-hover:bg-[#5A7A5F] transition-all">
+              <Heart className="w-5 h-5 fill-white stroke-[#6B8E6F]" />
             </div>
             <div>
-              <span className="font-display font-bold text-xl sm:text-2xl text-stone-900 tracking-tight block leading-none">
-                IDDA <span className="text-verde-500 font-semibold">Veterinária</span>
+              <span className="font-serif-heading font-bold text-xl sm:text-2xl text-[#1A1A1A] tracking-tight block leading-none">
+                IDDA <span className="text-[#6B8E6F] font-normal italic">Veterinária</span>
               </span>
-              <span className="text-[10px] text-stone-500 font-medium tracking-widest uppercase block mt-0.5">
-                Clínica & Centro Médico 24h
+              <span className="text-[10px] text-[#888888] font-semibold tracking-widest uppercase block mt-1">
+                Cuidado & Saúde Animal
               </span>
             </div>
           </a>
 
-          {/* Desktop Links */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-stone-700">
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-7 text-sm font-medium text-[#4A4A4A]">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className="hover:text-verde-600 transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-verde-500 hover:after:w-full after:transition-all"
+                className="hover:text-[#6B8E6F] transition-colors py-1 relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#6B8E6F] hover:after:w-full after:transition-all"
               >
                 {link.name}
               </a>
             ))}
           </div>
 
-          {/* Action CTAs */}
+          {/* Action CTA Button */}
           <div className="hidden sm:flex items-center gap-3">
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-verde-500 hover:bg-verde-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-md shadow-verde-500/20 hover:shadow-lg hover:shadow-verde-500/30 transition-all transform hover:-translate-y-0.5"
+              className="flex items-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm transition-all transform hover:-translate-y-0.5"
             >
-              <Calendar className="w-4 h-4" />
-              <span>Agendar Consulta</span>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>Agendar Agora</span>
             </a>
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-lg text-stone-700 hover:bg-stone-100 transition-colors"
-            aria-label="Toggle Navigation"
+            className="lg:hidden p-2 rounded-lg text-[#1A1A1A] hover:bg-[#D4C5B9]/30 transition-colors"
+            aria-label="Menu de Navegação"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -134,40 +135,37 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-b border-stone-200 px-4 pt-3 pb-6 space-y-3 mt-2 animate-in slide-in-from-top duration-200">
+          <div className="lg:hidden bg-[#FFFFFF] border-b border-[#D4C5B9] px-4 pt-3 pb-6 space-y-3 mt-2 animate-in slide-in-from-top duration-200">
             <div className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 rounded-lg text-stone-700 hover:bg-verde-50 hover:text-verde-600 font-medium transition-colors"
+                  className="px-3 py-2 rounded-lg text-[#1A1A1A] hover:bg-[#F5F1ED] hover:text-[#6B8E6F] font-medium text-sm transition-colors"
                 >
                   {link.name}
                 </a>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-[#dcf5e7] flex flex-col gap-2">
+            <div className="pt-3 border-t border-[#D4C5B9]/60 flex flex-col gap-2">
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 bg-[#1B7A3E] hover:bg-[#166633] text-white py-2.5 rounded-2xl font-bold uppercase tracking-wider text-center text-xs shadow-md"
+                className="w-full flex items-center justify-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3 rounded-lg font-bold text-xs uppercase tracking-wider text-center shadow-sm"
               >
                 <Calendar className="w-4 h-4" />
-                Agendar Consulta pelo WhatsApp
+                Agendar Agora pelo WhatsApp
               </a>
-
               <a
-                href={whatsappEmergency}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-[#E63329] text-white py-2.5 rounded-full font-bold uppercase tracking-wider text-center text-xs urgencia-pulse shadow-md"
+                href="tel:21986260484"
+                className="w-full flex items-center justify-center gap-2 bg-[#F5F1ED] hover:bg-[#D4C5B9]/40 text-[#1A1A1A] py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider text-center"
               >
-                <Phone className="w-4 h-4" />
-                Ligar Plantão (21) 98626-0484
+                <Phone className="w-4 h-4 text-[#6B8E6F]" />
+                Ligar: (21) 98626-0484
               </a>
             </div>
           </div>
@@ -176,3 +174,4 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
     </header>
   )
 }
+

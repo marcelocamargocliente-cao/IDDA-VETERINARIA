@@ -1,97 +1,83 @@
 import React from 'react'
-import { ShieldAlert, Award, Heart, Sparkles, Activity, Clock, Users, CheckCircle2 } from 'lucide-react'
+import { Heart, Users, Award, Star, Sparkles, CheckCircle2, ShieldCheck } from 'lucide-react'
 
 export const WhyIDDA: React.FC = () => {
-  const differentials = [
+  const stats = [
     {
-      icon: Clock,
-      title: 'Atendimento e Emergência 24h',
-      description: 'Equipe veterinária de plantão ininterrupto 365 dias por ano para emergências médicas, cirurgias de urgência e internação.',
-      highlight: 'Sempre abertos'
+      icon: Heart,
+      value: '10,000+',
+      label: 'Pets Felizes Atendidos',
+      sublabel: 'Cães e gatos cuidados com amor'
     },
     {
       icon: Users,
-      title: 'Equipe Médica Dedicada',
-      description: 'Profissionais experientes em consultas clínicas, procedimentos cirúrgicos, vacinação e exames diagnósticos.',
-      highlight: 'Médicos Veterinários'
+      value: '98%',
+      label: 'Satisfação dos Tutores',
+      sublabel: 'Avaliações positivas e lealdade'
     },
     {
-      icon: Heart,
-      title: 'Manejo Cat Friendly & Low Stress',
-      description: 'Ambientes e internações separadas por espécie para minimizar o estresse e oferecer máximo conforto durante a consulta.',
-      highlight: 'Zero Estresse'
+      icon: Award,
+      value: '15+',
+      label: 'Anos de Experiência',
+      sublabel: 'Dedicação contínua à medicina'
     },
     {
-      icon: Activity,
-      title: 'Exames Rápidos & Laboratório Próprio',
-      description: 'Aparelhos de Ultrassom com Doppler, Raio-X Digital e exames de sangue com resultados no mesmo dia.',
-      highlight: 'Agilidade Diagnóstica'
-    },
-    {
-      icon: ShieldAlert,
-      title: 'Bloco Cirúrgico Avançado',
-      description: 'Anestesia inalatória, monitorização multiparamétrica e sala de recuperação anestésica com aquecimento.',
-      highlight: 'Máxima Segurança'
-    },
-    {
-      icon: Sparkles,
-      title: 'Transparência & Acompanhamento',
-      description: 'Boletins médicos frequentes com fotos e vídeos para os tutores durante todo o período de internação.',
-      highlight: 'Tranquilidade para o Tutor'
+      icon: Star,
+      value: '5.0',
+      label: 'Nota Máxima no Google',
+      sublabel: 'Centenas de tutores satisfeitos'
     }
   ]
 
   return (
-    <section id="diferenciais" className="py-20 bg-stone-900 text-stone-100 relative overflow-hidden">
-      {/* Background Subtle Accent Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-verde-500/10 rounded-full blur-3xl pointer-events-none" />
+    <section id="por-que-idda" className="py-20 sm:py-24 bg-[#F5F1ED] border-y border-[#D4C5B9]/60 relative overflow-hidden">
+      {/* Ambient background decoration */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-[#D4C5B9]/30 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-xs font-bold uppercase tracking-widest text-verde-400 bg-verde-950/80 px-3.5 py-1.5 rounded-full inline-block border border-verde-500/30 mb-3">
-            O Padrão de Qualidade IDDA
+        {/* Centered Heading */}
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[#8B7355] bg-[#FFFFFF] px-4 py-1.5 rounded-full inline-block border border-[#D4C5B9] shadow-2xs">
+            Nossos Números & Trajetória
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4">
-            Por que confiarem o seu melhor amigo à IDDA Veterinária?
+          <h2 className="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
+            Confiança que você merece. <br />
+            <span className="italic text-[#6B8E6F] font-normal">Amor que seu pet reconhece.</span>
           </h2>
-          <p className="text-stone-400 text-base leading-relaxed">
-            Investimos continuamente na melhoria técnica da nossa equipe e em tecnologias que salvam vidas todos os dias.
+          <p className="text-[#4A4A4A] text-base leading-relaxed max-w-2xl mx-auto">
+            Especialistas dedicados ao bem-estar integral do seu companheiro, com tecnologia de ponta e carinho em cada consulta.
           </p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {differentials.map((item, idx) => {
-            const IconComponent = item.icon
+        {/* 4 Columns Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {stats.map((stat, idx) => {
+            const IconComp = stat.icon
             return (
               <div
                 key={idx}
-                className="bg-stone-800/80 border border-stone-700/80 hover:border-verde-500/50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-verde-950/50 flex flex-col justify-between"
+                className="bg-[#FFFFFF] rounded-2xl p-8 border border-[#D4C5B9]/60 shadow-sm hover:shadow-md transition-all duration-300 text-center flex flex-col items-center justify-between"
               >
+                <div className="w-14 h-14 rounded-2xl bg-[#F5F1ED] border border-[#D4C5B9] flex items-center justify-center text-[#6B8E6F] mb-6">
+                  <IconComp className="w-7 h-7" />
+                </div>
+
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="w-12 h-12 rounded-xl bg-verde-500/20 border border-verde-500/30 flex items-center justify-center text-verde-400">
-                      <IconComponent className="w-6 h-6" />
-                    </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-verde-400 bg-verde-950 px-2.5 py-1 rounded-md border border-verde-500/20">
-                      {item.highlight}
-                    </span>
+                  <div className="font-serif-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] mb-2 tracking-tight">
+                    {stat.value}
                   </div>
-
-                  <h3 className="font-display font-semibold text-xl text-white mb-3">
-                    {item.title}
+                  <h3 className="font-semibold text-base text-[#1A1A1A] mb-1">
+                    {stat.label}
                   </h3>
-
-                  <p className="text-stone-400 text-sm leading-relaxed mb-4">
-                    {item.description}
+                  <p className="text-xs text-[#888888]">
+                    {stat.sublabel}
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-stone-700/60 flex items-center gap-2 text-xs font-medium text-stone-300">
-                  <CheckCircle2 className="w-4 h-4 text-verde-400 shrink-0" />
-                  <span>Compromisso IDDA com o seu pet</span>
+                <div className="mt-6 pt-4 border-t border-[#F5F1ED] w-full flex items-center justify-center gap-1.5 text-[11px] font-medium text-[#6B8E6F]">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Padrão IDDA</span>
                 </div>
               </div>
             )
@@ -102,3 +88,4 @@ export const WhyIDDA: React.FC = () => {
     </section>
   )
 }
+
