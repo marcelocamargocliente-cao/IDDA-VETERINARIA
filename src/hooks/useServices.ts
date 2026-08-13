@@ -74,10 +74,17 @@ const DEFAULT_SERVICE_IMAGES = [
   'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&h=600&fit=crop',
 ]
 
-function normalizeServices(rawList: Service[]): Service[] {
+function normalizeServices(rawList: any[]): Service[] {
   return rawList.map((s, idx) => ({
-    ...s,
-    image_url: s.image_url || s.image || DEFAULT_SERVICE_IMAGES[idx % DEFAULT_SERVICE_IMAGES.length]
+    id: s.id?.toString() || `s_${idx + 1}`,
+    title: s.title || '',
+    description: s.description || '',
+    icon: s.icon || 'Stethoscope',
+    image_url: s.image_url || s.image || DEFAULT_SERVICE_IMAGES[idx % DEFAULT_SERVICE_IMAGES.length],
+    highlight: s.highlight || '',
+    link: s.link || '',
+    active: s.active !== undefined ? s.active : true,
+    order: Number(s.order ?? s.order_display ?? (idx + 1))
   }))
 }
 
@@ -94,19 +101,24 @@ export function useServices() {
     
     if (isSupabaseConfigured) {
       try {
-        const { data, error } = await supabase
+        const { data, error: sbError } = await supabase
           .from('services')
           .select('*')
-          .order('order', { ascending: true })
 
-        if (error) throw error
-        if (data && data.length > 0) {
-          setServices(normalizeServices(data))
+        if (!sbError && data && data.length > 0) {
+          const sorted = data.sort((a, b) => {
+            const orderA = Number(a.order ?? a.order_display ?? 0)
+            const orderB = Number(b.order ?? b.order_display ?? 0)
+            return orderA - orderB
+          })
+          const normalized = normalizeServices(sorted)
+          setServices(normalized)
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(normalized))
           setLoading(false)
           return
         }
       } catch (err: any) {
-        console.warn('Supabase fetch failed, falling back to local storage:', err.message)
+        console.warn('Supabase fetch services warning, falling back to local storage:', err?.message)
       }
     }
 
@@ -144,16 +156,26 @@ export function useServices() {
 
     if (isSupabaseConfigured) {
       try {
+        const payload: any = {
+          title: service.title,
+          description: service.description,
+          icon: service.icon || 'Stethoscope',
+          image_url: service.image_url || '',
+          highlight: service.highlight || '',
+          active: service.active ?? true,
+          order: service.order || 1,
+          order_display: service.order || 1
+        }
         const { data, error } = await supabase
           .from('services')
-          .insert([service])
+          .insert([payload])
           .select()
         if (!error && data && data[0]) {
           await fetchServices()
           return data[0]
         }
       } catch (err) {
-        console.warn('Supabase add failed, using local mode', err)
+        console.warn('Supabase add service error, using local mode:', err)
       }
     }
 
@@ -165,16 +187,20 @@ export function useServices() {
   const updateService = async (id: string, updates: Partial<Service>) => {
     if (isSupabaseConfigured) {
       try {
+        const payload: any = { ...updates, updated_at: new Date().toISOString() }
+        if (updates.order !== undefined) {
+          payload.order_display = updates.order
+        }
         const { error } = await supabase
           .from('services')
-          .update(updates)
+          .update(payload)
           .eq('id', id)
         if (!error) {
           await fetchServices()
           return
         }
       } catch (err) {
-        console.warn('Supabase update failed, using local mode', err)
+        console.warn('Supabase update service error, using local mode:', err)
       }
     }
 
@@ -194,7 +220,7 @@ export function useServices() {
           return
         }
       } catch (err) {
-        console.warn('Supabase delete failed, using local mode', err)
+        console.warn('Supabase delete service error, using local mode:', err)
       }
     }
 
@@ -212,3 +238,4 @@ export function useServices() {
     deleteService
   }
 }
+
