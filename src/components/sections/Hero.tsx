@@ -1,6 +1,7 @@
 import React from 'react'
 import { Calendar, Phone, ShieldCheck, Heart, Award, Clock, ArrowRight, Sparkles } from 'lucide-react'
 import { Photo } from '../../types'
+import fachadaImg from '../../assets/fachada.jpg'
 
 interface HeroProps {
   heroPhoto?: Photo
@@ -11,8 +12,7 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
   const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
   const whatsappEmergency = `https://wa.me/5521986260484?text=${encodeURIComponent('Preciso de atendimento de urgência!')}`
 
-  const defaultHeroImage = 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=1200&q=80'
-  const imageUrl = heroPhoto?.url || defaultHeroImage
+  const imageUrl = heroPhoto?.url || fachadaImg
 
   return (
     <section id="hero" className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-gradient-to-b from-[#f0faf4] via-[#eef8f2] to-[#f0faf4]">
@@ -87,8 +87,8 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
               <div className="relative bg-white rounded-[32px] overflow-hidden border-4 border-white shadow-lg aspect-[4/5]">
                 <img
                   src={imageUrl}
-                  alt="Atendimento na IDDA Veterinária"
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  alt="Fachada da IDDA Veterinária - Cosmos, Rio de Janeiro"
+                  className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#062614]/80 via-transparent to-transparent" />
                 
