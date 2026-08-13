@@ -5,6 +5,15 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 const INITIAL_TESTIMONIALS: Testimonial[] = [
   {
     id: 't1',
+    author_name: 'Tutor(a) Verificado(a)',
+    pet_name: 'Paciente da Clínica',
+    content: 'Atendimento atencioso, rápido amor pelos animais. Estrutura completa com exames e consultas!',
+    rating: 5,
+    active: true,
+    created_at: new Date().toISOString()
+  },
+  {
+    id: 't2',
     author_name: 'Mariana S.',
     pet_name: 'Paciente Canino',
     content: 'Atendimento atencioso, rápido e muito humano no momento que mais precisamos. Equipe dedicada que esclarece todas as dúvidas com carinho.',
@@ -13,7 +22,7 @@ const INITIAL_TESTIMONIALS: Testimonial[] = [
     created_at: new Date().toISOString()
   },
   {
-    id: 't2',
+    id: 't3',
     author_name: 'Carlos E.',
     pet_name: 'Paciente Felino',
     content: 'Excelente estrutura para consultas, exames e vacinas. Ambiente limpo, organizado e profissionais que tratam os animais com muito respeito.',
@@ -22,19 +31,10 @@ const INITIAL_TESTIMONIALS: Testimonial[] = [
     created_at: new Date().toISOString()
   },
   {
-    id: 't3',
-    author_name: 'Ana B.',
-    pet_name: 'Cliente da Clínica',
-    content: 'Ótima experiência no atendimento e realização de exames. Agilidade no diagnóstico e muito cuidado durante todo o procedimento.',
-    rating: 5,
-    active: true,
-    created_at: new Date().toISOString()
-  },
-  {
     id: 't4',
     author_name: 'Roberto P.',
     pet_name: 'Tutor em Cosmos',
-    content: 'Saber que temos uma clínica veterinária com atendimento 24h e suporte cirúrgico em Cosmos traz muita tranquilidade para quem tem pets.',
+    content: 'Saber que temos uma clínica veterinária com atendimento e suporte cirúrgico em Cosmos traz muita tranquilidade para quem tem pets.',
     rating: 5,
     active: true,
     created_at: new Date().toISOString()

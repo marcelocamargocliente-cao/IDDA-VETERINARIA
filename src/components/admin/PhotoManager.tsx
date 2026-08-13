@@ -141,9 +141,9 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
     e.preventDefault()
     setUploadError(null)
 
-    // If no file selected and no manual URL provided
+    // If no file selected and no existing URL
     if (!selectedFile && !url.trim()) {
-      setUploadError('Por favor, selecione uma foto do computador ou informe a URL da imagem.')
+      setUploadError('Por favor, selecione uma foto do seu computador.')
       return
     }
 
@@ -250,26 +250,35 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
           )}
 
           {/* PHOTO REPLACEMENT & UPLOAD ZONE */}
-          <div className="bg-stone-50/80 p-4 sm:p-5 rounded-2xl border border-stone-200/90 space-y-4">
+          <div className="bg-stone-50/90 p-5 sm:p-6 rounded-2xl border border-stone-200 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Upload className="w-3.5 h-3.5 text-verde-600" />
-                {editingId ? 'Trocar Foto (Arquivo do Computador)' : 'Selecionar Foto do Computador'}
+              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Upload className="w-4 h-4 text-verde-600" />
+                {editingId ? 'Escolher Nova Foto no PC' : 'Escolher Foto no PC'}
               </label>
               
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
-                  onChange={handleFileSelect}
-                  className="w-full text-xs text-stone-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-verde-600 file:text-white hover:file:bg-verde-700 cursor-pointer bg-white border border-stone-200 rounded-xl p-1.5"
-                />
+              <div className="flex flex-col gap-2">
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-verde-300 hover:border-verde-500 bg-white hover:bg-verde-50/40 rounded-2xl p-4 cursor-pointer transition-all">
+                  <Upload className="w-6 h-6 text-verde-600 mb-1.5" />
+                  <span className="text-xs font-bold text-stone-800">
+                    {selectedFile ? 'Trocar arquivo selecionado' : 'Clique para selecionar foto do seu computador'}
+                  </span>
+                  <span className="text-[11px] text-stone-500 mt-0.5">
+                    Formatos suportados: JPG, PNG, WebP, GIF (máximo 8MB)
+                  </span>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg, image/webp, image/gif"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </label>
               </div>
             </div>
 
             {/* PREVIEWS: CURRENT VS NEW */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
               {/* Current Image (if editing) */}
               {editingId && url && (
                 <div className="bg-white p-3 rounded-xl border border-stone-200">
@@ -285,14 +294,14 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
                 <div className="bg-white p-3 rounded-xl border-2 border-verde-500 shadow-sm relative">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-bold text-verde-700 flex items-center gap-1">
-                      <Check className="w-3 h-3 text-verde-600" /> Nova Foto Selecionada:
+                      <Check className="w-3.5 h-3.5 text-verde-600" /> Foto Selecionada:
                     </span>
                     <button
                       type="button"
                       onClick={handleRemoveSelectedFile}
                       className="text-xs text-red-600 hover:text-red-800 font-semibold"
                     >
-                      Remover seleção
+                      Remover
                     </button>
                   </div>
                   <div className="aspect-[16/10] bg-stone-100 rounded-lg overflow-hidden">
@@ -303,28 +312,6 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
                   </p>
                 </div>
               )}
-            </div>
-
-            {/* URL Input (Disabled/Readonly when file selected, or editable as fallback) */}
-            <div className="pt-2 border-t border-stone-200/60">
-              <label className="block text-xs font-semibold text-stone-700 mb-1">
-                URL da Imagem {selectedFile ? '(Será atualizada automaticamente após o envio)' : '(Ou informe o link direto)'}
-              </label>
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                disabled={Boolean(selectedFile)}
-                placeholder="https://exemplo.com/foto.jpg ou selecione um arquivo acima"
-                className={`w-full px-3.5 py-2 text-xs rounded-lg border focus:outline-none transition-all ${
-                  selectedFile
-                    ? 'bg-stone-100 text-stone-400 border-stone-200 cursor-not-allowed'
-                    : 'bg-white text-stone-800 border-stone-200 focus:ring-2 focus:ring-verde-500'
-                }`}
-              />
-              <p className="text-[10px] text-stone-500 mt-1">
-                {selectedFile ? 'O arquivo selecionado acima substituirá esta URL ao salvar.' : 'Se preferir, você pode manter ou colar diretamente um link web de imagem.'}
-              </p>
             </div>
           </div>
 
