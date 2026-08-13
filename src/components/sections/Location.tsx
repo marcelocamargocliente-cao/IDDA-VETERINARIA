@@ -12,8 +12,9 @@ export const Location: React.FC = () => {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const mapsDirections = "https://www.google.com/maps/dir/?api=1&destination=Estrada+do+Tutoia+520+lj+2+Cosmos+Rio+de+Janeiro+RJ+23060-275"
-  const mapsEmbedUrl = "https://maps.google.com/maps?q=Estrada+do+Tut%C3%B3ia%2C+520+lj.+2+-+Cosmos%2C+Rio+de+Janeiro+-+RJ%2C+23060-275&t=&z=16&ie=UTF8&iwloc=&output=embed"
+  const mapsPlaceUrl = "https://www.google.com/maps/place/Estrada+do+Tut%C3%B3ia,+520+-+Cosmos,+Rio+de+Janeiro,+RJ"
+  const mapsDirections = "https://www.google.com/maps/dir/?api=1&destination=Estrada+do+Tut%C3%B3ia,+520+-+Cosmos,+Rio+de+Janeiro+-+RJ+23060-275"
+  const mapsEmbedUrl = "https://maps.google.com/maps?q=Estrada+do+Tut%C3%B3ia%2C+520%2C+Cosmos%2C+Rio+de+Janeiro+-+RJ%2C+23060-275&t=&z=16&ie=UTF8&iwloc=&output=embed"
 
   return (
     <section id="localizacao" className="py-20 bg-[#f0faf4] border-t border-[#dcf5e7]">
@@ -123,26 +124,42 @@ export const Location: React.FC = () => {
 
             </div>
 
-            {/* Direction Route Button */}
-            <a
-              href={mapsDirections}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-[#1B7A3E] hover:bg-[#166633] text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-md transition-all"
-            >
-              <Navigation className="w-4 h-4" />
-              <span>Abrir no Google Maps & Traçar Rota</span>
-            </a>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <a
+                href={mapsDirections}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 bg-[#1B7A3E] hover:bg-[#166633] text-white py-3.5 px-4 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-md transition-all text-center"
+              >
+                <Navigation className="w-4 h-4 shrink-0" />
+                <span>Traçar Rota no Maps</span>
+              </a>
+              <a
+                href={mapsPlaceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 bg-[#f0faf4] hover:bg-[#dcf5e7] text-[#062614] border border-[#dcf5e7] py-3.5 px-4 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all text-center"
+              >
+                <MapPin className="w-4 h-4 text-[#1B7A3E] shrink-0" />
+                <span>Ver no Maps</span>
+              </a>
+            </div>
           </div>
 
           {/* Interactive Map Frame */}
-          <div className="lg:col-span-7 bg-white rounded-3xl overflow-hidden shadow-sm border border-[#dcf5e7] min-h-[380px] flex flex-col relative">
+          <div className="lg:col-span-7 bg-white rounded-3xl overflow-hidden shadow-sm border border-[#dcf5e7] min-h-[400px] flex flex-col relative group">
+            <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-sm border border-[#dcf5e7] px-3 py-1.5 rounded-xl shadow-md text-xs font-semibold text-[#062614] flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#1B7A3E] animate-pulse" />
+              <span>Estrada do Tutóia, 520 - Cosmos, RJ</span>
+            </div>
+
             <iframe
-              title="Localização IDDA Veterinária - Cosmos, Rio de Janeiro"
+              title="Localização IDDA Veterinária - Estrada do Tutóia 520 Cosmos, Rio de Janeiro"
               src={mapsEmbedUrl}
               width="100%"
               height="100%"
-              style={{ border: 0, minHeight: '400px' }}
+              style={{ border: 0, minHeight: '420px' }}
               allowFullScreen={false}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
