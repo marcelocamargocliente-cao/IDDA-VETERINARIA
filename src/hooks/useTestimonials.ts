@@ -5,36 +5,36 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 const INITIAL_TESTIMONIALS: Testimonial[] = [
   {
     id: 't1',
-    author_name: 'Mariana Silva',
-    pet_name: 'Luna (Golden Retriever)',
-    content: 'Atendimento humanizado e extremamente rápido no momento da urgência da Luna. A equipe médica foi incrível, precisa no diagnóstico e deu todo o suporte que precisávamos. Gratidão eterna à IDDA!',
+    author_name: 'Mariana S.',
+    pet_name: 'Paciente Canino',
+    content: 'Atendimento atencioso, rápido e muito humano no momento que mais precisamos. Equipe dedicada que esclarece todas as dúvidas com carinho.',
     rating: 5,
     active: true,
     created_at: new Date().toISOString()
   },
   {
     id: 't2',
-    author_name: 'Carlos Eduardo',
-    pet_name: 'Thor (Vira-Lata / SRD)',
-    content: 'Estrutura excelente! Levei o Thor para exames de rotina e vacinação. Ambiente extremamente limpo, sem estresse para os animais e profissionais muito atenciosos.',
+    author_name: 'Carlos E.',
+    pet_name: 'Paciente Felino',
+    content: 'Excelente estrutura para consultas, exames e vacinas. Ambiente limpo, organizado e profissionais que tratam os animais com muito respeito.',
     rating: 5,
     active: true,
     created_at: new Date().toISOString()
   },
   {
     id: 't3',
-    author_name: 'Ana Beatriz',
-    pet_name: 'Oliver (Gato Persa)',
-    content: 'Meu gatinho costuma ficar apavorado em clínicas, mas na IDDA Veterinária eles têm um cuidado especial no manejo gatuno. Ele ficou super tranquilo durante toda a consulta.',
+    author_name: 'Ana B.',
+    pet_name: 'Cliente da Clínica',
+    content: 'Ótima experiência no atendimento e realização de exames. Agilidade no diagnóstico e muito cuidado durante todo o procedimento.',
     rating: 5,
     active: true,
     created_at: new Date().toISOString()
   },
   {
     id: 't4',
-    author_name: 'Roberto & Patrícia',
-    pet_name: 'Belinha (Poodle 12 anos)',
-    content: 'Acompanhamento geriátrico fantástico. Dra. e especialistas muito competentes no tratamento de cardiologia e ortopedia. A Belinha ganhou nova qualidade de vida!',
+    author_name: 'Roberto P.',
+    pet_name: 'Tutor em Cosmos',
+    content: 'Saber que temos uma clínica veterinária com atendimento 24h e suporte cirúrgico em Cosmos traz muita tranquilidade para quem tem pets.',
     rating: 5,
     active: true,
     created_at: new Date().toISOString()

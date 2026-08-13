@@ -1,10 +1,10 @@
 import React from 'react'
-import { MapPin, Phone, Clock, Navigation, ShieldAlert, Copy, Check } from 'lucide-react'
+import { MapPin, Phone, Clock, Navigation, ShieldAlert, Copy, Check, Instagram, ShieldCheck } from 'lucide-react'
 
 export const Location: React.FC = () => {
   const [copied, setCopied] = React.useState(false)
 
-  const fullAddress = "Caminho do Tutóia, Lt. 37 Qd. 118 lj. 2 - Cosmos, Rio de Janeiro - RJ, CEP: 23060-275"
+  const fullAddress = "Estrada do Tutóia, 520 lj. 2 - Cosmos, Rio de Janeiro - RJ, CEP: 23060-275"
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(fullAddress)
@@ -12,7 +12,8 @@ export const Location: React.FC = () => {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const mapsDirections = "https://www.google.com/maps/dir/?api=1&destination=Caminho+do+Tutoia+Lt+37+Qd+118+lj+2+Cosmos+Rio+de+Janeiro+RJ"
+  const mapsDirections = "https://www.google.com/maps/dir/?api=1&destination=Estrada+do+Tutoia+520+lj+2+Cosmos+Rio+de+Janeiro+RJ+23060-275"
+  const mapsEmbedUrl = "https://maps.google.com/maps?q=Estrada+do+Tut%C3%B3ia%2C+520+lj.+2+-+Cosmos%2C+Rio+de+Janeiro+-+RJ%2C+23060-275&t=&z=16&ie=UTF8&iwloc=&output=embed"
 
   return (
     <section id="localizacao" className="py-20 bg-[#f0faf4] border-t border-[#dcf5e7]">
@@ -27,7 +28,7 @@ export const Location: React.FC = () => {
             Venha nos visitar em Cosmos, Rio de Janeiro
           </h2>
           <p className="text-[#0F5A2C] opacity-80 text-base leading-relaxed">
-            Localização de fácil acesso no bairro de Cosmos, preparada para oferecer atendimento ágil e humanizado para o seu pet.
+            Localização de fácil acesso na Estrada do Tutóia em Cosmos, com atendimento clínico, exames e plantão 24h.
           </p>
         </div>
 
@@ -45,7 +46,7 @@ export const Location: React.FC = () => {
                 <div>
                   <h3 className="font-bold text-[#062614] text-lg">Endereço</h3>
                   <p className="text-[#0F5A2C] text-sm mt-1 leading-relaxed">
-                    Caminho do Tutóia, Lt. 37 Qd. 118 lj. 2<br />
+                    Estrada do Tutóia, 520 lj. 2<br />
                     Cosmos, Rio de Janeiro - RJ<br />
                     CEP: 23060-275
                   </p>
@@ -103,6 +104,23 @@ export const Location: React.FC = () => {
                 </div>
               </div>
 
+              {/* Redes & Convênio */}
+              <div className="pt-3 border-t border-[#dcf5e7] flex flex-wrap items-center justify-between gap-3 text-xs">
+                <a
+                  href="https://www.instagram.com/iddaveterinaria/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 font-bold text-[#1B7A3E] hover:text-[#062614] transition-colors"
+                >
+                  <Instagram className="w-4 h-4" />
+                  <span>@iddaveterinaria</span>
+                </a>
+
+                <span className="inline-flex items-center gap-1 font-semibold text-[#0F5A2C] bg-[#dcf5e7] px-2.5 py-1 rounded-full text-[11px]">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#1B7A3E]" /> Credenciada Petlove
+                </span>
+              </div>
+
             </div>
 
             {/* Direction Route Button */}
@@ -121,7 +139,7 @@ export const Location: React.FC = () => {
           <div className="lg:col-span-7 bg-white rounded-3xl overflow-hidden shadow-sm border border-[#dcf5e7] min-h-[380px] flex flex-col relative">
             <iframe
               title="Localização IDDA Veterinária - Cosmos, Rio de Janeiro"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.8!2d-43.617!3d-22.946!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9be1a7b3c1a7a7a7%3A0x9be1a7b3c1a7a7a7!2sCaminho%20do%20Tut%C3%B3ia%2C%20Cosmos%2C%20Rio%20de%20Janeiro%20-%20RJ!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr"
+              src={mapsEmbedUrl}
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: '400px' }}

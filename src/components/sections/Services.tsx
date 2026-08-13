@@ -72,13 +72,13 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-verde-600 bg-verde-100 px-3 py-1 rounded-full inline-block mb-3">
-            Especialidades Médicas & Exames
+            Serviços Veterinários & Diagnósticos
           </span>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight mb-4">
-            Serviços completos para a saúde e longevidade do seu pet
+            Cuidados completos para a saúde e longevidade do seu pet
           </h2>
           <p className="text-stone-600 text-base leading-relaxed">
-            Oferecemos atendimento multidisciplinar com equipamentos avançados e acompanhamento contínuo do seu animal de estimação.
+            Consultas clínicas, cirurgias, vacinação, exames laboratoriais e diagnósticos por imagem com equipe dedicada.
           </p>
         </div>
 

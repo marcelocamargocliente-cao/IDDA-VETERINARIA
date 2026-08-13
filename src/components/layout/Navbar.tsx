@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
             </span>
             <span className="hidden md:flex items-center gap-1.5 text-xs text-[#dcf5e7]/80">
               <MapPin className="w-3.5 h-3.5 text-[#1B7A3E]" />
-              Caminho do Tutóia, Lt. 37 - Cosmos, RJ
+              Estrada do Tutóia, 520 lj. 2 - Cosmos, RJ
             </span>
           </div>
 

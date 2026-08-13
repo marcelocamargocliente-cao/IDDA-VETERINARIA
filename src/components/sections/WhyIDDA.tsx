@@ -11,9 +11,9 @@ export const WhyIDDA: React.FC = () => {
     },
     {
       icon: Users,
-      title: 'Corpo Clínico Especializado',
-      description: 'Especialistas nas áreas de Dermatologia, Cardiologia, Ortopedia, Oftalmologia, Oncologia e Cirurgia Geral.',
-      highlight: 'Médicos Pós-Graduados'
+      title: 'Equipe Médica Dedicada',
+      description: 'Profissionais experientes em consultas clínicas, procedimentos cirúrgicos, vacinação e exames diagnósticos.',
+      highlight: 'Médicos Veterinários'
     },
     {
       icon: Heart,

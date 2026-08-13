@@ -5,49 +5,49 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 const INITIAL_SERVICES: Service[] = [
   {
     id: 's1',
-    title: 'Atendimento de Urgência & Emergência',
-    description: 'Pronto atendimento estruturado para casos críticos, traumas, exames rápidos e estabilização imediata.',
-    icon: 'ShieldAlert',
+    title: 'Consultas Clínicas',
+    description: 'Atendimento clínico geral, avaliação preventiva e diagnósticos precisos para a saúde e bem-estar de cães e gatos.',
+    icon: 'Stethoscope',
     active: true,
     order: 1
   },
   {
     id: 's2',
-    title: 'Consultas Clínicas Especializadas',
-    description: 'Acompanhamento preventivo e tratamentos em Dermatologia, Cardiologia, Oftalmologia, Nefrologia e Oncologia.',
-    icon: 'Stethoscope',
+    title: 'Cirurgias (Geral e Eletivas)',
+    description: 'Procedimentos cirúrgicos gerais, castrações e cirurgias de urgência com bloco equipado e monitoramento anestésico.',
+    icon: 'Activity',
     active: true,
     order: 2
   },
   {
     id: 's3',
-    title: 'Cirurgias Geral e Ortopédica',
-    description: 'Bloco cirúrgico moderno equipado com anestesia inalatória, monitorização multiparamétrica e UTI pós-operatória.',
-    icon: 'Activity',
+    title: 'Vacinação & Imunização',
+    description: 'Protocolos de vacinação essenciais e atualizados para proteção de cães e gatos em todas as fases da vida.',
+    icon: 'ShieldCheck',
     active: true,
     order: 3
   },
   {
     id: 's4',
-    title: 'Exames Laboratoriais e Imagem',
-    description: 'Ultrassonografia com Doppler, Raio-X digital e laboratório próprio para resultados ágeis e diagnósticos precisos.',
+    title: 'Exames Laboratoriais',
+    description: 'Coleta de sangue, fezes, urina e análises clínicas para acompanhamento e diagnósticos rápidos.',
     icon: 'Microscope',
     active: true,
     order: 4
   },
   {
     id: 's5',
-    title: 'Vacinação & Microchipagem',
-    description: 'Protocolos de imunização importados e personalizados para cães e gatos, além de aplicação de microchips de identificação.',
-    icon: 'ShieldCheck',
+    title: 'Ultrassonografia',
+    description: 'Diagnóstico por imagem não invasivo para avaliação detalhada de órgãos abdominais e gestacionais.',
+    icon: 'HeartPulse',
     active: true,
     order: 5
   },
   {
     id: 's6',
-    title: 'Internação e Cuidados Intensivos',
-    description: 'Acomodações individuais e climatizadas, separadas por espécie (cães e gatos), com monitoramento contínuo 24h.',
-    icon: 'HeartPulse',
+    title: 'Raio-X Digital',
+    description: 'Exames radiográficos digitais de alta resolução para avaliação óssea, articular, torácica e abdominal.',
+    icon: 'ShieldAlert',
     active: true,
     order: 6
   }

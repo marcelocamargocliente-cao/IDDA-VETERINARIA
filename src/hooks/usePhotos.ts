@@ -5,8 +5,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 const INITIAL_PHOTOS: Photo[] = [
   {
     id: 'p1',
-    url: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Atendimento carinhoso e humanizado para cães e gatos',
+    url: 'https://nbdwgblwkvirdmbbfmaw.supabase.co/storage/v1/object/public/idda-photos/fachada.jpg',
+    caption: 'Fachada da IDDA Veterinária em Cosmos, Rio de Janeiro',
     category: 'hero',
     order: 1,
     created_at: new Date().toISOString()

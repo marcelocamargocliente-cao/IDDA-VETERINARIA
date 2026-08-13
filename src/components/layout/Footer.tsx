@@ -102,7 +102,7 @@ export const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#1B7A3E] shrink-0 mt-0.5" />
                 <div>
-                  <p>Caminho do Tutóia, Lt. 37 Qd. 118 lj. 2</p>
+                  <p>Estrada do Tutóia, 520 lj. 2</p>
                   <p className="text-xs text-[#dcf5e7]/60">Cosmos, Rio de Janeiro - RJ, CEP: 23060-275</p>
                 </div>
               </li>
