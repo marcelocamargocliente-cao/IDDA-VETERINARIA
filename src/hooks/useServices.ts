@@ -5,53 +5,81 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 const INITIAL_SERVICES: Service[] = [
   {
     id: 's1',
-    title: 'Consultas Clínicas',
-    description: 'Atendimento clínico geral, avaliação preventiva e diagnósticos precisos para a saúde e bem-estar de cães e gatos.',
-    icon: 'Stethoscope',
+    title: 'Atendimento de Urgência & Emergência',
+    description: 'Pronto atendimento estruturado para casos críticos, traumas, exames rápidos e estabilização imediata.',
+    image_url: 'https://images.unsplash.com/photo-1587300411515-65a60b8acf36?w=800&h=600&fit=crop',
+    icon: 'ShieldAlert',
+    highlight: '24 Horas',
     active: true,
     order: 1
   },
   {
     id: 's2',
-    title: 'Cirurgias (Geral e Eletivas)',
-    description: 'Procedimentos cirúrgicos gerais, castrações e cirurgias de urgência com bloco equipado e monitoramento anestésico.',
-    icon: 'Activity',
+    title: 'Consultas Clínicas Especializadas',
+    description: 'Acompanhamento preventivo e tratamentos em Dermatologia, Cardiologia, Oftalmologia, Nefrologia e Oncologia.',
+    image_url: 'https://images.unsplash.com/photo-1516738901601-4c0a165b8e35?w=800&h=600&fit=crop',
+    icon: 'Stethoscope',
+    highlight: 'Especialistas',
     active: true,
     order: 2
   },
   {
     id: 's3',
-    title: 'Vacinação & Imunização',
-    description: 'Protocolos de vacinação essenciais e atualizados para proteção de cães e gatos em todas as fases da vida.',
-    icon: 'ShieldCheck',
+    title: 'Cirurgias Geral e Ortopédica',
+    description: 'Bloco cirúrgico moderno equipado com anestesia inalatória, monitorização multiparamétrica e UTI pós-operatória.',
+    image_url: 'https://images.unsplash.com/photo-1631217314830-e1ee96e2c07d?w=800&h=600&fit=crop',
+    icon: 'Activity',
+    highlight: 'Bloco Cirúrgico',
     active: true,
     order: 3
   },
   {
     id: 's4',
-    title: 'Exames Laboratoriais',
-    description: 'Coleta de sangue, fezes, urina e análises clínicas para acompanhamento e diagnósticos rápidos.',
-    icon: 'Microscope',
+    title: 'Vacinação & Imunização',
+    description: 'Protocolos de vacinação essenciais e importados para cães e gatos, garantindo máxima imunidade e proteção.',
+    image_url: 'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&h=600&fit=crop',
+    icon: 'ShieldCheck',
+    highlight: 'Prevenção',
     active: true,
     order: 4
   },
   {
     id: 's5',
-    title: 'Ultrassonografia',
-    description: 'Diagnóstico por imagem não invasivo para avaliação detalhada de órgãos abdominais e gestacionais.',
-    icon: 'HeartPulse',
+    title: 'Exames Laboratoriais & Raio-X',
+    description: 'Laboratório próprio e diagnóstico por imagem digital para resultados rápidos e confiáveis no mesmo dia.',
+    image_url: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=600&fit=crop',
+    icon: 'Microscope',
+    highlight: 'Diagnóstico Ágil',
     active: true,
     order: 5
   },
   {
     id: 's6',
-    title: 'Raio-X Digital',
-    description: 'Exames radiográficos digitais de alta resolução para avaliação óssea, articular, torácica e abdominal.',
-    icon: 'ShieldAlert',
+    title: 'Ultrassonografia com Doppler',
+    description: 'Diagnóstico por imagem não invasivo de alta precisão para avaliação detalhada abdominal, torácica e gestacional.',
+    image_url: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&h=600&fit=crop',
+    icon: 'HeartPulse',
+    highlight: 'Alta Resolução',
     active: true,
     order: 6
   }
 ]
+
+const DEFAULT_SERVICE_IMAGES = [
+  'https://images.unsplash.com/photo-1587300411515-65a60b8acf36?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1516738901601-4c0a165b8e35?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1631217314830-e1ee96e2c07d?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=600&fit=crop',
+  'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&h=600&fit=crop',
+]
+
+function normalizeServices(rawList: Service[]): Service[] {
+  return rawList.map((s, idx) => ({
+    ...s,
+    image_url: s.image_url || s.image || DEFAULT_SERVICE_IMAGES[idx % DEFAULT_SERVICE_IMAGES.length]
+  }))
+}
 
 const LOCAL_STORAGE_KEY = 'idda_services_data'
 
@@ -73,7 +101,7 @@ export function useServices() {
 
         if (error) throw error
         if (data && data.length > 0) {
-          setServices(data)
+          setServices(normalizeServices(data))
           setLoading(false)
           return
         }
@@ -86,9 +114,13 @@ export function useServices() {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY)
     if (saved) {
       try {
-        setServices(JSON.parse(saved))
+        const parsed = JSON.parse(saved)
+        const normalized = normalizeServices(parsed)
+        setServices(normalized)
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(normalized))
       } catch {
         setServices(INITIAL_SERVICES)
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(INITIAL_SERVICES))
       }
     } else {
       setServices(INITIAL_SERVICES)

@@ -93,6 +93,11 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
                 <img
                   src={imageUrl}
                   alt="Estrutura e Fachada IDDA Veterinária - Cosmos, Rio de Janeiro"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    target.src = 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80'
+                  }}
                   className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 />
                 

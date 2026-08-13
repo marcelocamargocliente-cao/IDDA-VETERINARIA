@@ -21,6 +21,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState('Stethoscope')
+  const [imageUrl, setImageUrl] = useState('')
+  const [highlight, setHighlight] = useState('')
   const [active, setActive] = useState(true)
   const [order, setOrder] = useState(1)
   const [submitting, setSubmitting] = useState(false)
@@ -29,6 +31,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
     setTitle('')
     setDescription('')
     setIcon('Stethoscope')
+    setImageUrl('')
+    setHighlight('')
     setActive(true)
     setOrder(services.length + 1)
     setEditingId(null)
@@ -39,7 +43,9 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
     setEditingId(s.id)
     setTitle(s.title)
     setDescription(s.description)
-    setIcon(s.icon)
+    setIcon(s.icon || 'Stethoscope')
+    setImageUrl(s.image_url || s.image || '')
+    setHighlight(s.highlight || '')
     setActive(s.active)
     setOrder(s.order)
     setIsFormOpen(true)
@@ -52,9 +58,9 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
     setSubmitting(true)
     try {
       if (editingId) {
-        await onUpdateService(editingId, { title, description, icon, active, order })
+        await onUpdateService(editingId, { title, description, icon, image_url: imageUrl, highlight, active, order })
       } else {
-        await onAddService({ title, description, icon, active, order })
+        await onAddService({ title, description, icon, image_url: imageUrl, highlight, active, order })
       }
       resetForm()
     } catch (err) {
@@ -136,6 +142,28 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Descreva detalhes do procedimento..."
+                className="w-full px-3.5 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">URL da Foto do Serviço</label>
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="https://images.unsplash.com/..."
+                className="w-full px-3.5 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">Destaque / Badge (Opcional)</label>
+              <input
+                type="text"
+                value={highlight}
+                onChange={(e) => setHighlight(e.target.value)}
+                placeholder="Ex: 24 Horas, Especialistas, Bloco Cirúrgico"
                 className="w-full px-3.5 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500"
               />
             </div>

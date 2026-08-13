@@ -11,7 +11,11 @@ export interface Service {
   id: string
   title: string
   description: string
-  icon: string
+  icon?: string
+  image_url?: string
+  image?: string
+  highlight?: string
+  link?: string
   active: boolean
   order: number
 }
