@@ -87,7 +87,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-3 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl border border-stone-200 overflow-hidden">
+      <div className="bg-white rounded-3xl w-full max-w-3xl max-h-[92vh] flex flex-col shadow-2xl border border-stone-200 overflow-y-auto">
         
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 sm:px-8 sm:py-5 flex justify-between items-center z-10">
