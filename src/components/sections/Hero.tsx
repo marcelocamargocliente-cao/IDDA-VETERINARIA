@@ -3,7 +3,7 @@ import { Calendar, ArrowRight, Sparkles, Star } from 'lucide-react'
 import { Photo } from '../../types'
 import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
 import { CLINIC_CONFIG } from '../../config/constants'
-import defaultHeroDogImage from '../../assets/images/idda_hero_horizontal_16_9_1786671030992.jpg'
+import defaultHeroDogImage from '../../assets/images/idda_hero_golden_principal.jpg'
 
 interface HeroProps {
   heroPhoto?: Photo
