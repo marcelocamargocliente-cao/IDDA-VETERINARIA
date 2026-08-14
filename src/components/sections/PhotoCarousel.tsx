@@ -1,17 +1,48 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Maximize2, X, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Image as ImageIcon, Maximize2, X } from 'lucide-react'
 import { Photo } from '../../types'
+import { supabase } from '../../lib/supabase'
 
-interface PhotoCarouselProps {
-  photos: Photo[]
-  loading?: boolean
-}
+const FALLBACK_PHOTOS: Photo[] = [
+  { id:'f1', url:'https://images.pexels.com/photos/6235231/pexels-photo-6235231.jpeg?w=800', caption:'Atendimento de urgência 24h', category:'gallery', order:1, created_at: new Date().toISOString() },
+  { id:'f2', url:'https://images.pexels.com/photos/5998473/pexels-photo-5998473.jpeg?w=800', caption:'Consultas clínicas especializadas', category:'gallery', order:2, created_at: new Date().toISOString() },
+  { id:'f3', url:'https://images.pexels.com/photos/7470754/pexels-photo-7470754.jpeg?w=800', caption:'Bloco cirúrgico moderno', category:'service', order:3, created_at: new Date().toISOString() },
+  { id:'f4', url:'https://images.pexels.com/photos/6235022/pexels-photo-6235022.jpeg?w=800', caption:'Vacinação e imunização', category:'service', order:4, created_at: new Date().toISOString() },
+  { id:'f5', url:'https://images.pexels.com/photos/3786157/pexels-photo-3786157.jpeg?w=800', caption:'Exames laboratoriais', category:'gallery', order:5, created_at: new Date().toISOString() },
+  { id:'f6', url:'https://images.pexels.com/photos/5998465/pexels-photo-5998465.jpeg?w=800', caption:'Diagnóstico por imagem', category:'gallery', order:6, created_at: new Date().toISOString() },
+]
 
-export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading }) => {
+export const PhotoCarousel: React.FC = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' })
+  const [photos, setPhotos] = useState<Photo[]>(FALLBACK_PHOTOS)
+  const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'gallery' | 'service' | 'hero'>('all')
   const [activeModalPhoto, setActiveModalPhoto] = useState<Photo | null>(null)
+
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const { data } = await supabase.from('photos').select('*').order('order')
+        if (data && data.length > 0) {
+          setPhotos(data)
+        }
+      } catch (err) {
+        console.error('Error fetching photos:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchPhotos()
+
+    const channel = supabase.channel('photos-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'photos' }, fetchPhotos)
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev()
@@ -30,7 +61,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
     <section id="galeria" className="py-20 sm:py-24 bg-[#F5F1ED] overflow-hidden border-t border-[#D4C5B9]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3">
             <span className="text-xs font-semibold uppercase tracking-widest text-[#8B7355] bg-[#FFFFFF] px-4 py-1.5 rounded-full inline-block border border-[#D4C5B9] shadow-2xs">
@@ -45,7 +75,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
             </p>
           </div>
 
-          {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-2">
             {[
               { id: 'all', label: 'Todas as Fotos' },
@@ -67,7 +96,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
           </div>
         </div>
 
-        {/* Carousel Container */}
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((n) => (
@@ -81,7 +109,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
           </div>
         ) : (
           <div className="relative">
-            {/* Embla Viewport */}
             <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
               <div className="flex -ml-4">
                 {filteredPhotos.map((photo) => (
@@ -95,20 +122,14 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
                     >
                       <img
                         src={photo.url}
-                        alt={photo.caption}
+                        alt={photo.caption || 'Foto IDDA'}
                         referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          const target = e.currentTarget
-                          target.src = 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80'
-                        }}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
                       
-                      {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-transparent to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 
-                      {/* Caption & Zoom Icon */}
                       <div className="absolute bottom-0 left-0 right-0 p-5 text-white flex items-end justify-between gap-3">
                         <div>
                           <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4C5B9] bg-[#1A1A1A]/80 px-2.5 py-0.5 rounded border border-[#D4C5B9]/40 inline-block mb-1">
@@ -129,7 +150,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
               </div>
             </div>
 
-            {/* Navigation Buttons */}
             <button
               onClick={scrollPrev}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FFFFFF]/90 backdrop-blur-md shadow-md border border-[#D4C5B9] flex items-center justify-center text-[#1A1A1A] hover:bg-[#6B8E6F] hover:text-white transition-all z-10"
@@ -148,7 +168,6 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
           </div>
         )}
 
-        {/* Modal Lightbox */}
         {activeModalPhoto && (
           <div 
             className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
@@ -185,4 +204,3 @@ export const PhotoCarousel: React.FC<PhotoCarouselProps> = ({ photos, loading })
     </section>
   )
 }
-

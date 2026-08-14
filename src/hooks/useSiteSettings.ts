@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   location_image: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80',
-    hero_image: '',
+  hero_image: 'https://nbdwgblwkvirdmbbfmaw.supabase.co/storage/v1/object/public/idda-photos/fachada.jpg',
   gallery_featured: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1200&q=80',
 }
 

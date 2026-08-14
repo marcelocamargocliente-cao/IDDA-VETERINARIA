@@ -1,12 +1,8 @@
-import React, { useState } from 'react'
-import { Stethoscope, Activity, Scissors, ShieldAlert, Sparkles, X, Calendar, Check, ArrowRight, HeartPulse, ImageIcon } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Sparkles, X, Calendar, Check, ArrowRight, HeartPulse, ImageIcon } from 'lucide-react'
 import { Service } from '../../types'
 import { CLINIC_CONFIG } from '../../config/constants'
-
-interface ServicesProps {
-  services: Service[]
-  loading?: boolean
-}
+import { supabase } from '../../lib/supabase'
 
 const DEFAULT_FALLBACK_IMAGES: Record<string, string> = {
   urgencia: 'https://images.unsplash.com/photo-1587300411515-65a60b8acf36?w=800&h=600&fit=crop',
@@ -15,13 +11,22 @@ const DEFAULT_FALLBACK_IMAGES: Record<string, string> = {
   default: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=800&h=600&fit=crop'
 }
 
-function getServiceFallback(title: string, id: string): string {
+function getServiceFallback(title: string): string {
   const lower = (title || '').toLowerCase()
   if (lower.includes('urg') || lower.includes('emerg')) return DEFAULT_FALLBACK_IMAGES.urgencia
   if (lower.includes('cons') || lower.includes('clín') || lower.includes('clin')) return DEFAULT_FALLBACK_IMAGES.consultas
   if (lower.includes('cirurg') || lower.includes('ortop')) return DEFAULT_FALLBACK_IMAGES.cirurgias
   return DEFAULT_FALLBACK_IMAGES.default
 }
+
+const DEFAULT_SERVICES: Service[] = [
+  { id: '1', title: 'Pronto Atendimento 24h', description: 'Emergências veterinárias atendidas a qualquer hora por equipe especializada.', image_url: DEFAULT_FALLBACK_IMAGES.urgencia, active: true, order: 1, highlight: '24 Horas' },
+  { id: '2', title: 'Consultas Especializadas', description: 'Avaliação clínica completa com veterinários dedicados e experientes.', image_url: DEFAULT_FALLBACK_IMAGES.consultas, active: true, order: 2, highlight: 'Clínica Geral' },
+  { id: '3', title: 'Centro Cirúrgico', description: 'Cirurgias gerais e ortopédicas com monitoramento anestésico avançado.', image_url: DEFAULT_FALLBACK_IMAGES.cirurgias, active: true, order: 3, highlight: 'Alta Complexidade' },
+  { id: '4', title: 'Vacinação & Profilaxia', description: 'Imunização com vacinas importadas e orientação rigorosa.', image_url: DEFAULT_FALLBACK_IMAGES.default, active: true, order: 4 },
+  { id: '5', title: 'Exames Laboratoriais', description: 'Resultados rápidos e precisos para diagnósticos seguros.', image_url: DEFAULT_FALLBACK_IMAGES.default, active: true, order: 5 },
+  { id: '6', title: 'Ultrassom & Raio-X', description: 'Diagnóstico por imagem de última geração no próprio local.', image_url: DEFAULT_FALLBACK_IMAGES.default, active: true, order: 6 },
+]
 
 interface ServiceCardProps {
   service: Service
@@ -31,59 +36,35 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, getServiceWhatsappUrl }) => {
   const [imageLoaded, setImageLoaded] = useState(false)
-  const [imgSrc, setImgSrc] = useState<string>(
-    service.image_url || service.image || getServiceFallback(service.title, service.id)
-  )
-
-  const handleImageError = () => {
-    const fallback = getServiceFallback(service.title, service.id)
-    if (imgSrc !== fallback) {
-      setImgSrc(fallback)
-    }
-  }
+  const imageUrl = service.image_url || service.image || getServiceFallback(service.title)
 
   return (
     <div className="group bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#D4C5B9]/60 hover:border-[#6B8E6F] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
-      
-      {/* Service Photo with Skeleton & Zoom Effect */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#E8DFD8]">
-        {/* Loading Skeleton */}
         {!imageLoaded && (
           <div className="absolute inset-0 bg-[#E8DFD8] animate-pulse flex items-center justify-center">
             <ImageIcon className="w-8 h-8 text-[#D4C5B9] animate-bounce" />
           </div>
         )}
-
         <img
-          src={imgSrc}
+          src={imageUrl}
           alt={service.title}
           referrerPolicy="no-referrer"
           onLoad={() => setImageLoaded(true)}
-          onError={handleImageError}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
         />
-
-        {/* Ambient Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/75 via-transparent to-transparent pointer-events-none" />
-        
-        {/* Badge */}
         {service.highlight && (
           <span className="absolute top-4 right-4 bg-[#6B8E6F] text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
             {service.highlight}
           </span>
         )}
-
         <div className="absolute bottom-3 left-4 text-white">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#D4C5B9]">
-            IDDA Veterinária
-          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#D4C5B9]">IDDA Veterinária</span>
         </div>
       </div>
 
-      {/* Card Content */}
       <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
         <div>
           <h3 className="font-serif-heading font-bold text-xl sm:text-2xl text-[#1A1A1A] mb-3 group-hover:text-[#6B8E6F] transition-colors">
@@ -113,17 +94,42 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, getService
           </a>
         </div>
       </div>
-
     </div>
   )
 }
 
-export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
+export const Services: React.FC = () => {
+  const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES)
+  const [loading, setLoading] = useState(true)
   const [selectedService, setSelectedService] = useState<Service | null>(null)
   const [showAllServices, setShowAllServices] = useState(false)
   const [modalImageLoaded, setModalImageLoaded] = useState(false)
 
-  const activeServices = services.filter(s => s.active)
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data } = await supabase.from('services').select('*').order('order')
+        if (data && data.length > 0) {
+          setServices(data)
+        }
+      } catch (err) {
+        console.error('Error fetching services:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchServices()
+
+    const channel = supabase.channel('services-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, fetchServices)
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+  const activeServices = services.filter(s => s.active !== false)
   const featuredServices = activeServices.slice(0, 3)
   const extraServices = activeServices.slice(3)
 
@@ -134,7 +140,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
     <section id="servicos" className="py-20 sm:py-24 bg-[#FFFFFF]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Header Centered */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#6B8E6F] bg-[#F5F1ED] px-4 py-1.5 rounded-full inline-block border border-[#D4C5B9]">
             Cuidado Médico Completo
@@ -147,7 +152,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
           </p>
         </div>
 
-        {/* Loading State */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((n) => (
@@ -156,7 +160,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
           </div>
         ) : (
           <div className="space-y-12">
-            {/* 3 Main Featured Cards (Grid 3 Colunas com Fotos Grandes) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredServices.map((service) => (
                 <ServiceCard
@@ -168,7 +171,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
               ))}
             </div>
 
-            {/* Extra Services Grid / Accordion */}
             {extraServices.length > 0 && (
               <div className="space-y-6">
                 {!showAllServices ? (
@@ -198,7 +200,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
           </div>
         )}
 
-        {/* Service Details Lightbox Modal */}
         {selectedService && (
           <div 
             className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
@@ -211,26 +212,17 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
               className="relative max-w-2xl w-full bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-2xl border border-[#D4C5B9]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header Image */}
               <div className="relative aspect-[16/9] bg-[#E8DFD8] overflow-hidden">
                 {!modalImageLoaded && (
                   <div className="absolute inset-0 bg-[#E8DFD8] animate-pulse" />
                 )}
-                
                 <img
-                  src={selectedService.image_url || selectedService.image || getServiceFallback(selectedService.title, selectedService.id)}
+                  src={selectedService.image_url || selectedService.image || getServiceFallback(selectedService.title)}
                   alt={selectedService.title}
                   referrerPolicy="no-referrer"
                   onLoad={() => setModalImageLoaded(true)}
-                  onError={(e) => {
-                    const target = e.currentTarget
-                    target.src = getServiceFallback(selectedService.title, selectedService.id)
-                  }}
-                  className={`w-full h-full object-cover transition-opacity duration-300 ${
-                    modalImageLoaded ? 'opacity-100' : 'opacity-0'
-                  }`}
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${modalImageLoaded ? 'opacity-100' : 'opacity-0'}`}
                 />
-                
                 <button
                   onClick={() => {
                     setSelectedService(null)
@@ -241,13 +233,11 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
                   <X className="w-5 h-5" />
                 </button>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/85 via-transparent to-transparent pointer-events-none" />
-                
                 <div className="absolute bottom-4 left-6 right-6 text-white">
                   <h3 className="font-serif-heading text-2xl sm:text-3xl font-bold">{selectedService.title}</h3>
                 </div>
               </div>
 
-              {/* Modal Body */}
               <div className="p-6 sm:p-8 space-y-6">
                 <p className="text-[#4A4A4A] text-sm sm:text-base leading-relaxed">
                   {selectedService.description}
@@ -266,10 +256,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
                     <li className="flex items-center gap-2">
                       <Check className="w-3.5 h-3.5 text-[#6B8E6F] shrink-0" />
                       <span>Equipamentos modernos e protocolos alinhados à medicina veterinária contemporânea.</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-3.5 h-3.5 text-[#6B8E6F] shrink-0" />
-                      <span>Esclarecimento detalhado de condutas e orientações pós-atendimento aos tutores.</span>
                     </li>
                   </ul>
                 </div>
@@ -303,6 +289,3 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
     </section>
   )
 }
-
-
-

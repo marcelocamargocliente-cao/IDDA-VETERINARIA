@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
+import React, { useState, useEffect } from 'react'
 import { CLINIC_CONFIG } from '../../config/constants'
+import { supabase } from '../../lib/supabase'
 import { 
   MapPin, 
   Phone, 
@@ -13,20 +13,36 @@ import {
   Car, 
   Compass, 
   MessageCircle, 
-  CheckCircle2
+  CheckCircle2 
 } from 'lucide-react'
 
-interface LocationProps {
-  locationImage?: string
-}
-
-export const Location: React.FC<LocationProps> = ({ locationImage: propLocationImage }) => {
+export const Location: React.FC = () => {
   const [copied, setCopied] = useState(false)
-  const { getSetting } = useSiteSettings()
+  const [locationImage, setLocationImage] = useState('https://images.pexels.com/photos/5998473/pexels-photo-5998473.jpeg?w=800')
 
-  const dynamicLocationImage =
-    propLocationImage ||
-    getSetting('location_image', DEFAULT_SITE_SETTINGS.location_image)
+  useEffect(() => {
+    const fetchLocationImg = async () => {
+      try {
+        const { data } = await supabase.from('site_settings').select('value').eq('key', 'location_image').single()
+        if (data?.value) setLocationImage(data.value)
+      } catch (e) {
+        console.error('Error loading location image:', e)
+      }
+    }
+    fetchLocationImg()
+
+    const channel = supabase.channel('location-settings-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'site_settings' }, (payload: any) => {
+        if (payload.new?.key === 'location_image') {
+          setLocationImage(payload.new.value)
+        }
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   const fullAddress = CLINIC_CONFIG.address.full
 
@@ -43,7 +59,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
     <section id="localizacao" className="py-20 sm:py-24 bg-[#F5F1ED] border-t border-[#D4C5B9]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#8B7355] bg-[#FFFFFF] px-4 py-1.5 rounded-full inline-block border border-[#D4C5B9] shadow-2xs">
             Onde Estamos & Visitas
@@ -58,11 +73,9 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Main Info Card (Left) */}
           <div className="lg:col-span-6 bg-[#FFFFFF] rounded-3xl p-7 sm:p-9 shadow-sm border border-[#D4C5B9]/70 flex flex-col justify-between space-y-8">
             <div className="space-y-6">
               
-              {/* Address */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F5F1ED] border border-[#D4C5B9] text-[#6B8E6F] flex items-center justify-center shrink-0">
                   <MapPin className="w-6 h-6" />
@@ -93,7 +106,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
                 </div>
               </div>
 
-              {/* Phone & WhatsApp */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F5F1ED] border border-[#D4C5B9] text-[#6B8E6F] flex items-center justify-center shrink-0">
                   <Phone className="w-6 h-6" />
@@ -125,7 +137,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
                 </div>
               </div>
 
-              {/* Opening Hours */}
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#F5F1ED] border border-[#D4C5B9] text-[#6B8E6F] flex items-center justify-center shrink-0">
                   <Clock className="w-6 h-6" />
@@ -139,7 +150,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
                 </div>
               </div>
 
-              {/* Social & Certifications */}
               <div className="pt-4 border-t border-[#F5F1ED] flex flex-wrap items-center justify-between gap-3 text-xs">
                 <a
                   href={CLINIC_CONFIG.social.instagramUrl}
@@ -158,7 +168,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
 
             </div>
 
-            {/* Direct GPS Navigation Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <a
                 href={mapsDirections}
@@ -182,14 +191,11 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
             </div>
           </div>
 
-          {/* Practical Arrival & Structure Highlights (Right) */}
           <div className="lg:col-span-6 flex flex-col gap-6 justify-between">
-            
-            {/* Visual Photo Card */}
             <div className="bg-[#FFFFFF] rounded-3xl overflow-hidden shadow-sm border border-[#D4C5B9]/70 group relative">
               <div className="relative aspect-[16/9] overflow-hidden bg-[#1A1A1A]">
                 <img
-                  src={dynamicLocationImage}
+                  src={locationImage}
                   alt="Estrutura e Acolhimento IDDA Veterinária"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -206,7 +212,6 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
               </div>
             </div>
 
-            {/* Arrival Benefits & Guide */}
             <div className="bg-[#FFFFFF] rounded-3xl p-7 sm:p-8 shadow-sm border border-[#D4C5B9]/70 space-y-4">
               <h4 className="font-serif-heading font-bold text-lg text-[#1A1A1A] flex items-center gap-2">
                 <Car className="w-5 h-5 text-[#6B8E6F]" />
@@ -251,4 +256,3 @@ export const Location: React.FC<LocationProps> = ({ locationImage: propLocationI
     </section>
   )
 }
-
