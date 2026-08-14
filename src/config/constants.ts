@@ -2,7 +2,7 @@
 export const CLINIC_CONFIG = {
   name: 'IDDA Veterinária',
   fullName: 'IDDA — Instituto de Diagnóstico e Atendimento Veterinário',
-  tagline: 'Cuidado, Diagnóstico Preciso & Saúde Animal com Amor em Cosmos',
+  tagline: 'Cuidado, Diagnóstico Preciso & Saúde Animal com Amor',
   
   // Telefones
   phone: {
