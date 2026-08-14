@@ -3,10 +3,10 @@ import {
   Lock, X, Upload, Trash2, Edit2, Plus, Check, LogOut, 
   Image as ImageIcon, ShieldCheck, Sparkles, AlertCircle, Save, Layers, MapPin
 } from 'lucide-react'
-import { supabase, supabaseAdmin, SB_SK } from '../../lib/supabase'
+import { supabase, supabaseAdmin, SB_URL, SB_SK } from '../../lib/supabase'
 import { Photo, Service } from '../../types'
 
-const BUCKET_NAME = 'site_images'
+const BUCKET_NAME = 'idda-photos'
 
 export const AdminPanel: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -86,22 +86,28 @@ export const AdminPanel: React.FC = () => {
     }
   }
 
-  // Upload helper to Supabase Storage
+  // Upload helper — fetch direto (padrão Thayssa, sem SDK)
   const uploadImageToSupabase = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop()
-    const fileName = `admin-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-    const filePath = `uploads/${fileName}`
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
 
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from(BUCKET_NAME)
-      .upload(filePath, file, { upsert: true })
+    const r = await fetch(`${SB_URL}/storage/v1/object/${BUCKET_NAME}/${fileName}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_SK,
+        'Authorization': `Bearer ${SB_SK}`,
+        'Content-Type': file.type || 'image/jpeg',
+        'x-upsert': 'true'
+      },
+      body: file
+    })
 
-    if (uploadError) {
-      throw new Error(`Erro no upload: ${uploadError.message}`)
+    if (!r.ok) {
+      const txt = await r.text()
+      throw new Error(`Erro no upload: ${txt}`)
     }
 
-    const { data } = supabaseAdmin.storage.from(BUCKET_NAME).getPublicUrl(filePath)
-    return data.publicUrl
+    return `${SB_URL}/storage/v1/object/public/${BUCKET_NAME}/${fileName}`
   }
 
   // Handle Hero Image Update
