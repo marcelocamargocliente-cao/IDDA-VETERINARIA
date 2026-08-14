@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Phone, Heart, Menu, X, Lock, MapPin, Clock, Calendar, MessageCircle } from 'lucide-react'
+import { CLINIC_CONFIG } from '../../config/constants'
 
 interface NavbarProps {
   onOpenAdmin: () => void
@@ -32,8 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
     { name: 'Localização', href: '#localizacao' },
   ]
 
-  const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
+  const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
@@ -43,11 +43,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
           <div className="flex items-center gap-6 text-[#D4C5B9]">
             <span className="flex items-center gap-1.5 font-medium text-xs">
               <Clock className="w-3.5 h-3.5 text-[#6B8E6F]" />
-              Atendimento e Plantão Veterinário
+              {CLINIC_CONFIG.hours}
             </span>
             <span className="hidden md:flex items-center gap-1.5 text-xs text-[#D4C5B9]/80">
               <MapPin className="w-3.5 h-3.5 text-[#6B8E6F]" />
-              Estrada do Tutóia, 520 lj. 2 - Cosmos, RJ
+              {CLINIC_CONFIG.address.street} - {CLINIC_CONFIG.address.neighborhood}, {CLINIC_CONFIG.address.state}
             </span>
           </div>
 
@@ -57,9 +57,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-[#F5F1ED] hover:text-[#6B8E6F] font-semibold text-xs transition-colors"
+              title="Agendamentos via WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-[#6B8E6F]" />
+              <span>{CLINIC_CONFIG.phone.whatsappFormatted}</span>
+            </a>
+
+            <a 
+              href={`tel:${CLINIC_CONFIG.phone.contactClean}`}
+              className="hidden sm:flex items-center gap-1.5 text-[#D4C5B9] hover:text-[#F5F1ED] text-xs transition-colors"
+              title="Telefone de Contato"
             >
               <Phone className="w-3.5 h-3.5 text-[#6B8E6F]" />
-              <span>(21) 98626-0484</span>
+              <span>{CLINIC_CONFIG.phone.contact}</span>
             </a>
 
             <button
@@ -92,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
                 IDDA <span className="text-[#6B8E6F] font-normal italic">Veterinária</span>
               </span>
               <span className="text-[10px] text-[#888888] font-semibold tracking-widest uppercase block mt-1">
-                Cuidado & Saúde Animal
+                {CLINIC_CONFIG.tagline}
               </span>
             </div>
           </a>
@@ -157,15 +167,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3 rounded-lg font-bold text-xs uppercase tracking-wider text-center shadow-sm"
               >
-                <Calendar className="w-4 h-4" />
-                Agendar Agora pelo WhatsApp
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp: {CLINIC_CONFIG.phone.whatsappFormatted}
               </a>
               <a
-                href="tel:21986260484"
+                href={`tel:${CLINIC_CONFIG.phone.contactClean}`}
                 className="w-full flex items-center justify-center gap-2 bg-[#F5F1ED] hover:bg-[#D4C5B9]/40 text-[#1A1A1A] py-2.5 rounded-lg font-bold text-xs uppercase tracking-wider text-center"
               >
                 <Phone className="w-4 h-4 text-[#6B8E6F]" />
-                Ligar: (21) 98626-0484
+                Ligar: {CLINIC_CONFIG.phone.contact}
               </a>
             </div>
           </div>
@@ -174,4 +184,5 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAdmin, isAdminLoggedIn }) 
     </header>
   )
 }
+
 

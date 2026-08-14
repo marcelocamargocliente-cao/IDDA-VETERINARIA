@@ -1,9 +1,9 @@
 import React from 'react'
 import { Calendar, Phone, MessageCircle, Heart, Sparkles } from 'lucide-react'
+import { CLINIC_CONFIG } from '../../config/constants'
 
 export const CtaSection: React.FC = () => {
-  const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
+  const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
   return (
     <section className="py-20 sm:py-24 bg-[#6B8E6F] text-white relative overflow-hidden">
@@ -24,7 +24,7 @@ export const CtaSection: React.FC = () => {
         </h2>
 
         <p className="text-white/90 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-light">
-          Venha conhecer nossa clínica na Estrada do Tutóia, 520 em Cosmos, ou fale diretamente com a nossa recepção pelo WhatsApp.
+          Venha conhecer nossa clínica na {CLINIC_CONFIG.address.street} em {CLINIC_CONFIG.address.neighborhood}, ou fale diretamente com a nossa recepção pelo WhatsApp.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -34,16 +34,16 @@ export const CtaSection: React.FC = () => {
             rel="noopener noreferrer"
             className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-[#5A7A5F] hover:bg-[#F5F1ED] font-bold text-xs uppercase tracking-wider px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
           >
-            <Calendar className="w-4 h-4" />
-            <span>Agendar pelo WhatsApp</span>
+            <MessageCircle className="w-4 h-4" />
+            <span>WhatsApp: {CLINIC_CONFIG.phone.whatsappFormatted}</span>
           </a>
 
           <a
-            href="tel:21986260484"
+            href={`tel:${CLINIC_CONFIG.phone.contactClean}`}
             className="w-full sm:w-auto flex items-center justify-center gap-2 border-2 border-white/80 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider px-8 py-4 rounded-lg transition-all"
           >
             <Phone className="w-4 h-4" />
-            <span>Ligar: (21) 98626-0484</span>
+            <span>Ligar: {CLINIC_CONFIG.phone.contact}</span>
           </a>
         </div>
 
@@ -51,3 +51,4 @@ export const CtaSection: React.FC = () => {
     </section>
   )
 }
+

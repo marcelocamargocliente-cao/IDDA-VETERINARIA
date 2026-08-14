@@ -12,8 +12,8 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onClose 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const defaultAdminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'veiculosbcoecia@gmail.com'
-  const defaultAdminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'idda2025'
+  const defaultAdminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'iddaveterinaria@gmail.com'
+  const defaultAdminPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'IDDAVet2025'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,9 +26,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onClose 
         email.trim().toLowerCase() === defaultAdminEmail.trim().toLowerCase() && 
         password === defaultAdminPassword
       ) {
+        localStorage.setItem('admin_logged_in', 'true')
+        localStorage.setItem('admin_email', email)
+        localStorage.setItem('admin_login_time', new Date().toISOString())
         onLoginSuccess()
       } else {
-        setError('E-mail ou senha incorretos. Verifique suas credenciais de administrador.')
+        setError('E-mail ou senha incorretos. Verifique suas credenciais de administrador da IDDA Veterinária.')
       }
       setLoading(false)
     }, 400)
@@ -85,8 +88,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onClose 
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="veiculosbcoecia@gmail.com"
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setError(null)
+                }}
+                placeholder="iddaveterinaria@gmail.com"
                 className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-verde-500 focus:bg-white text-stone-900"
               />
             </div>

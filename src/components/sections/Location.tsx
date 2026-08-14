@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
+import { CLINIC_CONFIG } from '../../config/constants'
 import { 
   MapPin, 
   Phone, 
@@ -14,10 +16,19 @@ import {
   CheckCircle2
 } from 'lucide-react'
 
-export const Location: React.FC = () => {
-  const [copied, setCopied] = useState(false)
+interface LocationProps {
+  locationImage?: string
+}
 
-  const fullAddress = "Estrada do Tutóia, 520 lj. 2 - Cosmos, Rio de Janeiro - RJ, CEP: 23060-275"
+export const Location: React.FC<LocationProps> = ({ locationImage: propLocationImage }) => {
+  const [copied, setCopied] = useState(false)
+  const { getSetting } = useSiteSettings()
+
+  const dynamicLocationImage =
+    propLocationImage ||
+    getSetting('location_image', DEFAULT_SITE_SETTINGS.location_image)
+
+  const fullAddress = CLINIC_CONFIG.address.full
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(fullAddress)
@@ -25,7 +36,7 @@ export const Location: React.FC = () => {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const mapsDirections = "https://www.google.com/maps/dir/?api=1&destination=Estrada+do+Tut%C3%B3ia,+520+-+Cosmos,+Rio+de+Janeiro+-+RJ+23060-275"
+  const mapsDirections = CLINIC_CONFIG.address.mapsUrl
   const wazeDirections = "https://waze.com/ul?q=Estrada%20do%20Tut%C3%B3ia%20520%20Cosmos%20Rio%20de%20Janeiro"
 
   return (
@@ -38,10 +49,10 @@ export const Location: React.FC = () => {
             Onde Estamos & Visitas
           </span>
           <h2 className="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-bold text-[#1A1A1A] tracking-tight">
-            Venha nos visitar em Cosmos, RJ
+            Venha nos visitar em {CLINIC_CONFIG.address.neighborhood}, {CLINIC_CONFIG.address.state}
           </h2>
           <p className="text-[#4A4A4A] text-base leading-relaxed max-w-2xl mx-auto">
-            Estrutura planejada na Estrada do Tutóia, de fácil acesso e estacionamento, pronta para receber você e seu pet com carinho e conforto.
+            Estrutura planejada na {CLINIC_CONFIG.address.street}, de fácil acesso e estacionamento, pronta para receber você e seu pet com carinho e conforto.
           </p>
         </div>
 
@@ -59,9 +70,9 @@ export const Location: React.FC = () => {
                 <div>
                   <h3 className="font-serif-heading font-bold text-[#1A1A1A] text-lg">Endereço da Clínica</h3>
                   <p className="text-[#4A4A4A] text-sm mt-1 leading-relaxed">
-                    Estrada do Tutóia, 520, Loja 2<br />
-                    Cosmos — Rio de Janeiro, RJ<br />
-                    <span className="text-xs text-[#8B7355] font-semibold">CEP: 23060-275</span>
+                    {CLINIC_CONFIG.address.street}<br />
+                    {CLINIC_CONFIG.address.neighborhood} — {CLINIC_CONFIG.address.city}, {CLINIC_CONFIG.address.state}<br />
+                    <span className="text-xs text-[#8B7355] font-semibold">CEP: {CLINIC_CONFIG.address.cep}</span>
                   </p>
                   <button
                     onClick={handleCopyAddress}
@@ -89,13 +100,27 @@ export const Location: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-serif-heading font-bold text-[#1A1A1A] text-lg">Telefones & Atendimento</h3>
-                  <div className="mt-1 space-y-1 text-sm text-[#4A4A4A]">
-                    <p>
-                      WhatsApp / Agendamentos: <a href="https://wa.me/5521986260484" target="_blank" rel="noopener noreferrer" className="font-bold text-[#6B8E6F] hover:underline">(21) 98626-0484</a>
-                    </p>
-                    <p>
-                      Telefone de Contato: <a href="tel:21998570710" className="font-semibold text-[#1A1A1A] hover:underline">(21) 99857-0710</a>
-                    </p>
+                  <div className="mt-1 space-y-2 text-sm text-[#4A4A4A]">
+                    <div>
+                      <span className="text-xs text-[#888888] block">WhatsApp / Agendamentos:</span>
+                      <a 
+                        href={CLINIC_CONFIG.whatsappUrl()} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="font-bold text-[#6B8E6F] hover:underline text-base"
+                      >
+                        {CLINIC_CONFIG.phone.whatsappFormatted}
+                      </a>
+                    </div>
+                    <div>
+                      <span className="text-xs text-[#888888] block">Telefone de Contato:</span>
+                      <a 
+                        href={`tel:${CLINIC_CONFIG.phone.contactClean}`} 
+                        className="font-semibold text-[#1A1A1A] hover:text-[#6B8E6F] text-base"
+                      >
+                        {CLINIC_CONFIG.phone.contact}
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -108,8 +133,8 @@ export const Location: React.FC = () => {
                 <div>
                   <h3 className="font-serif-heading font-bold text-[#1A1A1A] text-lg">Horários de Atendimento</h3>
                   <p className="text-[#4A4A4A] text-sm mt-1 leading-relaxed">
-                    Consultas clínicas e procedimentos agendados.<br />
-                    <strong className="text-[#6B8E6F] font-bold">Pronto atendimento veterinário</strong>
+                    {CLINIC_CONFIG.hoursDetail}<br />
+                    <strong className="text-[#6B8E6F] font-bold">{CLINIC_CONFIG.hours}</strong>
                   </p>
                 </div>
               </div>
@@ -117,13 +142,13 @@ export const Location: React.FC = () => {
               {/* Social & Certifications */}
               <div className="pt-4 border-t border-[#F5F1ED] flex flex-wrap items-center justify-between gap-3 text-xs">
                 <a
-                  href="https://www.instagram.com/iddaveterinaria/"
+                  href={CLINIC_CONFIG.social.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 font-bold text-[#6B8E6F] hover:text-[#1A1A1A] transition-colors"
                 >
                   <Instagram className="w-4 h-4" />
-                  <span>@iddaveterinaria</span>
+                  <span>{CLINIC_CONFIG.social.instagram}</span>
                 </a>
 
                 <span className="inline-flex items-center gap-1.5 font-semibold text-[#8B7355] bg-[#F5F1ED] px-3.5 py-1.5 rounded-full text-xs border border-[#D4C5B9]">
@@ -164,7 +189,7 @@ export const Location: React.FC = () => {
             <div className="bg-[#FFFFFF] rounded-3xl overflow-hidden shadow-sm border border-[#D4C5B9]/70 group relative">
               <div className="relative aspect-[16/9] overflow-hidden bg-[#1A1A1A]">
                 <img
-                  src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80"
+                  src={dynamicLocationImage}
                   alt="Estrutura e Acolhimento IDDA Veterinária"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -196,7 +221,7 @@ export const Location: React.FC = () => {
 
                 <div className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-[#6B8E6F] shrink-0 mt-0.5" />
-                  <span><strong>Localização Privilegiada:</strong> Situada na Estrada do Tutóia, próximo aos principais eixos viários de Cosmos e Paciência.</span>
+                  <span><strong>Localização Privilegiada:</strong> Situada na {CLINIC_CONFIG.address.street}, próximo aos principais eixos viários de Cosmos e Paciência.</span>
                 </div>
 
                 <div className="flex items-start gap-2.5">
@@ -207,7 +232,7 @@ export const Location: React.FC = () => {
 
               <div className="pt-3 border-t border-[#F5F1ED]">
                 <a
-                  href="https://wa.me/5521986260484?text=Ol%C3%A1%2C%20gostaria%20de%20ajuda%20com%20a%20localiza%C3%A7%C3%A3o%20e%20estacionamento%20da%20cl%C3%ADnica."
+                  href={CLINIC_CONFIG.whatsappUrl('Olá, gostaria de ajuda com a localização e estacionamento da clínica.')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-2 bg-[#F5F1ED] hover:bg-[#6B8E6F] text-[#1A1A1A] hover:text-white px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
@@ -226,3 +251,4 @@ export const Location: React.FC = () => {
     </section>
   )
 }
+

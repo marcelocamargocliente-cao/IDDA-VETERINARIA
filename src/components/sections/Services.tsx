@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Stethoscope, Activity, Scissors, ShieldAlert, Sparkles, X, Calendar, Check, ArrowRight, HeartPulse, ImageIcon } from 'lucide-react'
 import { Service } from '../../types'
+import { CLINIC_CONFIG } from '../../config/constants'
 
 interface ServicesProps {
   services: Service[]
@@ -25,10 +26,10 @@ function getServiceFallback(title: string, id: string): string {
 interface ServiceCardProps {
   service: Service
   onSelect: (service: Service) => void
-  whatsappMessage: (title: string) => string
+  getServiceWhatsappUrl: (title: string) => string
 }
 
-const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, whatsappMessage }) => {
+const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, getServiceWhatsappUrl }) => {
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imgSrc, setImgSrc] = useState<string>(
     service.image_url || service.image || getServiceFallback(service.title, service.id)
@@ -103,7 +104,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, whatsappMe
           </button>
 
           <a
-            href={`https://wa.me/5521986260484?text=${whatsappMessage(service.title)}`}
+            href={getServiceWhatsappUrl(service.title)}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#F5F1ED] hover:bg-[#6B8E6F] text-[#1A1A1A] hover:text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all shadow-2xs"
@@ -126,8 +127,8 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
   const featuredServices = activeServices.slice(0, 3)
   const extraServices = activeServices.slice(3)
 
-  const whatsappMessage = (serviceName: string) => 
-    encodeURIComponent(`Olá! Gostaria de agendar o serviço de ${serviceName} na IDDA Veterinária.`)
+  const getServiceWhatsappUrl = (serviceName: string) => 
+    CLINIC_CONFIG.whatsappUrl(`Olá! Gostaria de agendar o serviço de ${serviceName} na IDDA Veterinária.`)
 
   return (
     <section id="servicos" className="py-20 sm:py-24 bg-[#FFFFFF]">
@@ -162,7 +163,7 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
                   key={service.id}
                   service={service}
                   onSelect={setSelectedService}
-                  whatsappMessage={whatsappMessage}
+                  getServiceWhatsappUrl={getServiceWhatsappUrl}
                 />
               ))}
             </div>
@@ -187,7 +188,7 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
                         key={service.id}
                         service={service}
                         onSelect={setSelectedService}
-                        whatsappMessage={whatsappMessage}
+                        getServiceWhatsappUrl={getServiceWhatsappUrl}
                       />
                     ))}
                   </div>
@@ -284,7 +285,7 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
                     Fechar
                   </button>
                   <a
-                    href={`https://wa.me/5521986260484?text=${whatsappMessage(selectedService.title)}`}
+                    href={getServiceWhatsappUrl(selectedService.title)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white px-6 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-sm transition-all"
@@ -302,5 +303,6 @@ export const Services: React.FC<ServicesProps> = ({ services, loading }) => {
     </section>
   )
 }
+
 
 

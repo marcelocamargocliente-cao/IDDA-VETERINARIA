@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { PhotoManager } from './PhotoManager'
 import { ServiceManager } from './ServiceManager'
 import { TestimonialManager } from './TestimonialManager'
+import { ManageSectionImages } from './ManageSectionImages'
 import { usePhotos } from '../../hooks/usePhotos'
 import { useServices } from '../../hooks/useServices'
 import { useTestimonials } from '../../hooks/useTestimonials'
+import { useSiteSettings } from '../../hooks/useSiteSettings'
 import { isSupabaseConfigured } from '../../lib/supabase'
+import { CLINIC_CONFIG } from '../../config/constants'
 import { 
   Image as ImageIcon, 
   Stethoscope, 
@@ -15,7 +18,11 @@ import {
   ShieldCheck, 
   ArrowLeft,
   Settings,
-  Sparkles
+  Sparkles,
+  LayoutTemplate,
+  Phone,
+  MapPin,
+  Clock
 } from 'lucide-react'
 
 interface AdminDashboardProps {
@@ -24,11 +31,12 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'photos' | 'services' | 'testimonials' | 'settings'>('photos')
+  const [activeTab, setActiveTab] = useState<'photos' | 'services' | 'testimonials' | 'sections' | 'settings'>('photos')
 
   const { photos, addPhoto, updatePhoto, deletePhoto } = usePhotos()
   const { services, addService, updateService, deleteService } = useServices()
   const { testimonials, addTestimonial, updateTestimonial, deleteTestimonial } = useTestimonials()
+  const { settings } = useSiteSettings()
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-100 overflow-y-auto">
@@ -153,6 +161,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClos
           </button>
 
           <button
+            onClick={() => setActiveTab('sections')}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold text-sm rounded-t-xl transition-all ${
+              activeTab === 'sections'
+                ? 'bg-white text-verde-700 border-t-2 border-x border-verde-600 shadow-sm'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
+            }`}
+          >
+            <LayoutTemplate className="w-4 h-4" />
+            <span>Imagens das Seções</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
             className={`flex items-center gap-2 px-5 py-3 font-semibold text-sm rounded-t-xl transition-all ${
               activeTab === 'settings'
@@ -194,8 +214,43 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClos
             />
           )}
 
+          {activeTab === 'sections' && (
+            <ManageSectionImages />
+          )}
+
           {activeTab === 'settings' && (
             <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm space-y-6 max-w-3xl">
+              <div>
+                <h3 className="font-display font-bold text-xl text-stone-900 flex items-center gap-2">
+                  <Phone className="w-5 h-5 text-verde-600" />
+                  Informações da Clínica (src/config/constants.ts)
+                </h3>
+                <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                  Estes dados são centralizados e utilizados em todo o site (Navbar, Footer, Localização, CTAs e WhatsApp).
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 space-y-3 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-stone-500 block">WhatsApp / Agendamentos</span>
+                    <span className="text-stone-900 font-bold">{CLINIC_CONFIG.phone.whatsappFormatted}</span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 block">Telefone de Contato</span>
+                    <span className="text-stone-900 font-bold">{CLINIC_CONFIG.phone.contact}</span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 block">Endereço</span>
+                    <span className="text-stone-900 font-medium">{CLINIC_CONFIG.address.street} - {CLINIC_CONFIG.address.neighborhood}</span>
+                  </div>
+                  <div>
+                    <span className="text-stone-500 block">Instagram</span>
+                    <span className="text-stone-900 font-medium">{CLINIC_CONFIG.social.instagram}</span>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <h3 className="font-display font-bold text-xl text-stone-900 flex items-center gap-2">
                   <Database className="w-5 h-5 text-verde-600" />
@@ -237,6 +292,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClos
                   <li><strong>photos</strong>: id, url, caption, category, order, created_at</li>
                   <li><strong>services</strong>: id, title, description, icon, active, order</li>
                   <li><strong>testimonials</strong>: id, author_name, pet_name, content, rating, active, created_at</li>
+                  <li><strong>site_settings</strong>: id, key (unique), value, description, updated_at</li>
                 </ul>
               </div>
             </div>

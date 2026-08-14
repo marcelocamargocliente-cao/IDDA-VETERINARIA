@@ -1,17 +1,19 @@
 import React from 'react'
 import { Calendar, ArrowRight, ShieldCheck, Heart, Sparkles, Star } from 'lucide-react'
 import { Photo } from '../../types'
+import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
+import { CLINIC_CONFIG } from '../../config/constants'
 
 interface HeroProps {
   heroPhoto?: Photo
 }
 
 export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
-  const whatsappMessage = encodeURIComponent('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
-  const whatsappUrl = `https://wa.me/5521986260484?text=${whatsappMessage}`
+  const { getSetting } = useSiteSettings()
+  const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
-  const defaultHeroImage = 'https://nbdwgblwkvirdmbbfmaw.supabase.co/storage/v1/object/public/idda-photos/fachada.jpg'
-  const imageUrl = heroPhoto?.url || defaultHeroImage
+  const settingHeroImage = getSetting('hero_image', DEFAULT_SITE_SETTINGS.hero_image)
+  const imageUrl = settingHeroImage || heroPhoto?.url || DEFAULT_SITE_SETTINGS.hero_image
 
   return (
     <section id="hero" className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-[#F5F1ED]">

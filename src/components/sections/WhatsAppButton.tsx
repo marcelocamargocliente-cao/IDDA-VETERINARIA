@@ -1,12 +1,11 @@
 import React from 'react'
 import { MessageCircle } from 'lucide-react'
+import { CLINIC_CONFIG } from '../../config/constants'
 
 export const WhatsAppButton: React.FC = () => {
-  const whatsappNumber = '5521986260484'
-  const whatsappMessage = encodeURIComponent(
+  const whatsappUrl = CLINIC_CONFIG.whatsappUrl(
     'Olá! Gostaria de mais informações sobre os serviços da IDDA Veterinária.'
   )
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
   return (
     <>
@@ -50,20 +49,20 @@ export const WhatsAppButton: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           className="group relative block focus:outline-none focus:ring-4 focus:ring-[#6B8E6F]/30 rounded-full cursor-pointer"
-          title="Falar com atendimento via WhatsApp"
-          aria-label="Falar com atendimento via WhatsApp"
+          title={`Fale com a gente no WhatsApp: ${CLINIC_CONFIG.phone.whatsappFormatted}`}
+          aria-label={`Fale com a gente no WhatsApp: ${CLINIC_CONFIG.phone.whatsappFormatted}`}
         >
           {/* Anel de Pulsação (background) */}
           <div className="absolute inset-0 rounded-full bg-[#6B8E6F] whatsapp-pulse-ring" />
 
-          {/* Botão Redondo com Ícone - Aumentado para 80px desktop / 72px mobile */}
+          {/* Botão Redondo com Ícone - 80px desktop / 72px mobile */}
           <div className="relative w-[72px] h-[72px] sm:w-20 sm:h-20 bg-[#6B8E6F] hover:bg-[#5A7A5F] rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 transform group-hover:scale-110 active:scale-95 whatsapp-button-pulse">
             <MessageCircle className="w-9 h-9 sm:w-10 sm:h-10 text-white" strokeWidth={2} />
           </div>
 
           {/* Tooltip ao hover (Desktop) */}
           <div className="hidden sm:block absolute bottom-full right-0 mb-4 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-xl whitespace-nowrap pointer-events-none">
-            Fale com a gente!
+            WhatsApp: {CLINIC_CONFIG.phone.whatsappFormatted}
             {/* Seta apontando para baixo */}
             <div className="absolute top-full right-6 w-2 h-2 bg-[#1A1A1A] transform -translate-y-1 rotate-45" />
           </div>
@@ -75,3 +74,4 @@ export const WhatsAppButton: React.FC = () => {
 
 // Backward compatibility export if needed
 export const WhatsAppFloat = WhatsAppButton
+

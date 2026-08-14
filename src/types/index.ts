@@ -30,10 +30,19 @@ export interface Testimonial {
   created_at: string
 }
 
-export interface SiteSettings {
-  id: string
+export interface SiteSetting {
+  id?: string
   key: string
   value: string
+  description?: string
+  updated_at?: string
+}
+
+export interface SiteSettings {
+  id?: string
+  key: string
+  value: string
+  description?: string
 }
 
 export interface AdminUser {
