@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Photo } from '../../types'
-import { supabase, isSupabaseConfigured } from '../../lib/supabase'
+import { supabase, supabaseAdmin, isSupabaseConfigured } from "../../lib/supabase"
 import { ImageCropper } from './ImageCropper'
 import { Plus, Trash2, Edit2, Check, X, Tag, Upload, RefreshCw, AlertCircle, Scissors } from 'lucide-react'
 
@@ -133,7 +133,7 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${cleanExt}`
         const filePath = `photos/${fileName}`
 
-        const { error: storageError } = await supabase.storage
+        const { error: storageError } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(filePath, file, {
             cacheControl: '3600',
@@ -141,7 +141,7 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
           })
 
         if (!storageError) {
-          const { data } = supabase.storage
+          const { data } = supabaseAdmin.storage
             .from('idda-photos')
             .getPublicUrl(filePath)
 
