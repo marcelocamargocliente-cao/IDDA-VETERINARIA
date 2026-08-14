@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
+import { Upload, X } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
 interface ManageSiteSettingsProps {
@@ -14,6 +15,7 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,29 +23,31 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      alert('Por favor, selecione uma imagem válida')
+      setMessage({ type: 'error', text: 'Por favor, selecione uma imagem válida' })
       return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Imagem muito grande. Máximo 5MB')
+      setMessage({ type: 'error', text: 'Imagem muito grande. Máximo 5MB' })
       return
     }
 
     setSelectedFile(file)
     const preview = URL.createObjectURL(file)
     setPreviewUrl(preview)
+    setMessage(null)
   }
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      alert('Selecione uma foto primeiro')
+      setMessage({ type: 'error', text: 'Selecione uma foto primeiro' })
       return
     }
 
     try {
       setIsUploading(true)
       setUploadProgress(30)
+      setMessage(null)
 
       const fileName = `hero-${Date.now()}.jpg`
       const { error: uploadError } = await supabase.storage
@@ -66,13 +70,13 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
           key: 'hero_image',
           value: imageUrl,
           updated_at: new Date().toISOString(),
-        })
+        }, { onConflict: 'key' })
 
       if (dbError) throw dbError
       setUploadProgress(100)
 
       setTimeout(() => {
-        alert('✅ Foto salva com sucesso!')
+        setMessage({ type: 'success', text: '✅ Foto salva com sucesso!' })
         if (onPhotoSaved) onPhotoSaved(imageUrl)
         
         setSelectedFile(null)
@@ -82,8 +86,9 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
       }, 500)
 
     } catch (error) {
-      console.error('❌ Erro ao fazer upload:', error)
-      alert(`Erro ao salvar foto: ${error instanceof Error ? error.message : 'Desconhecido'}`)
+      console.error('Erro ao fazer upload:', error)
+      const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido'
+      setMessage({ type: 'error', text: `❌ Erro ao salvar foto: ${errorMsg}` })
       setUploadProgress(0)
     } finally {
       setIsUploading(false)
@@ -94,33 +99,49 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
     setSelectedFile(null)
     setPreviewUrl('')
     setUploadProgress(0)
+    setMessage(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-stone-200 shadow-sm">
-      <h3 className="text-xl font-bold mb-2 text-stone-900">📸 Editar Foto do Hero</h3>
-      <p className="text-sm text-stone-600 mb-4">
-        Altere a foto principal exibida na página inicial da clínica
-      </p>
+    <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm space-y-6 max-w-3xl">
+      <div>
+        <h3 className="font-display font-bold text-xl text-stone-900 flex items-center gap-2">
+          <Upload className="w-5 h-5 text-verde-600" />
+          Editar Foto do Hero
+        </h3>
+        <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+          Altere a foto principal exibida na página inicial da clínica
+        </p>
+      </div>
+
+      {message && (
+        <div className={`p-4 rounded-lg border ${
+          message.type === 'success' 
+            ? 'bg-green-50 border-green-200 text-green-800' 
+            : 'bg-red-50 border-red-200 text-red-800'
+        }`}>
+          <p className="text-sm font-medium">{message.text}</p>
+        </div>
+      )}
 
       {currentPhotoUrl && !previewUrl && (
-        <div className="mb-6 p-4 bg-stone-50 rounded-lg">
-          <p className="text-xs text-stone-600 mb-2">Foto Atual:</p>
+        <div className="p-4 bg-stone-50 rounded-lg">
+          <p className="text-xs text-stone-600 mb-2 font-semibold">Foto Atual:</p>
           <img 
             src={currentPhotoUrl} 
-            alt="Foto atual"
+            alt="Foto atual do hero"
             className="w-full h-48 object-cover rounded"
           />
         </div>
       )}
 
       {previewUrl && (
-        <div className="mb-6 p-4 bg-verde-50 rounded-lg border-2 border-verde-200">
-          <p className="text-xs text-verde-700 mb-2">Nova Foto (Preview):</p>
+        <div className="p-4 bg-verde-50 rounded-lg border-2 border-verde-200">
+          <p className="text-xs text-verde-700 mb-2 font-semibold">Nova Foto (Preview):</p>
           <img 
             src={previewUrl} 
-            alt="Preview"
+            alt="Preview da nova foto"
             className="w-full h-48 object-cover rounded"
           />
           <p className="text-xs text-stone-600 mt-2">
@@ -129,7 +150,7 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
         </div>
       )}
 
-      <div className="mb-4">
+      <div>
         <label className="block">
           <div className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-stone-300 rounded-lg cursor-pointer hover:border-verde-500 transition bg-stone-50">
             <div className="text-center">
@@ -154,7 +175,7 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
       </div>
 
       {uploadProgress > 0 && uploadProgress < 100 && (
-        <div className="mb-4">
+        <div>
           <div className="flex justify-between items-center mb-2">
             <p className="text-sm font-semibold text-stone-700">Upload em andamento...</p>
             <p className="text-sm text-stone-600">{uploadProgress}%</p>
@@ -172,7 +193,7 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
         <button
           onClick={handleUpload}
           disabled={!selectedFile || isUploading}
-          className="flex-1 bg-verde-600 hover:bg-verde-700 disabled:bg-stone-300 text-white px-6 py-2 rounded-lg font-semibold transition"
+          className="flex-1 bg-verde-600 hover:bg-verde-700 disabled:bg-stone-300 text-white px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-wider transition"
         >
           {isUploading ? '⏳ Salvando...' : '💾 Salvar Foto'}
         </button>
@@ -181,14 +202,15 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
           <button
             onClick={handleCancel}
             disabled={isUploading}
-            className="px-6 py-2 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 transition"
+            className="px-6 py-3 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 transition flex items-center gap-2"
           >
-            ✕ Cancelar
+            <X className="w-4 h-4" />
+            Cancelar
           </button>
         )}
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+      <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
         ℹ️ A foto será sincronizada em todos os dispositivos após o upload.
       </div>
     </div>
