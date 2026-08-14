@@ -17,7 +17,7 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
   const imageUrl = settingHeroImage || heroPhoto?.url || defaultHeroDogImage || DEFAULT_SITE_SETTINGS.hero_image
 
   return (
-    <section id="inicio" className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-[#F5F1ED]">
+    <section id="inicio" className="relative pt-24 pb-12 md:pt-28 md:pb-20 overflow-hidden bg-[#F5F1ED]">
       {/* Decorative Subtle Ambient Elements */}
       <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 rounded-full bg-[#D4C5B9]/40 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 rounded-full bg-[#6B8E6F]/10 blur-3xl pointer-events-none" />
