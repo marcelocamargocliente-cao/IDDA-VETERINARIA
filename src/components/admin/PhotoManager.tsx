@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react'
 import { Photo } from '../../types'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
-import { Plus, Trash2, Edit2, Check, X, Tag, Upload, RefreshCw, AlertCircle } from 'lucide-react'
+import { ImageCropper } from './ImageCropper'
+import { Plus, Trash2, Edit2, Check, X, Tag, Upload, RefreshCw, AlertCircle, Scissors } from 'lucide-react'
 
 interface PhotoManagerProps {
   photos: Photo[]
@@ -28,6 +29,9 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
   // File upload states
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [rawImageForCrop, setRawImageForCrop] = useState<string | null>(null)
+  const [showCropper, setShowCropper] = useState(false)
+  const [originalFileName, setOriginalFileName] = useState<string>('foto.jpg')
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -45,6 +49,8 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
     setEditingId(null)
     setSelectedFile(null)
     setPreviewImage(null)
+    setRawImageForCrop(null)
+    setShowCropper(false)
     setUploadError(null)
     setIsFormOpen(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -58,6 +64,8 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
     setOrder(p.order)
     setSelectedFile(null)
     setPreviewImage(null)
+    setRawImageForCrop(null)
+    setShowCropper(false)
     setUploadError(null)
     setIsFormOpen(true)
   }
@@ -74,25 +82,45 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
       return
     }
 
-    // Validate file size (max 8MB)
-    if (file.size > 8 * 1024 * 1024) {
-      setUploadError('A imagem selecionada é muito grande. Escolha uma foto de até 8MB.')
+    // Validate file size (max 12MB)
+    if (file.size > 12 * 1024 * 1024) {
+      setUploadError('A imagem selecionada é muito grande. Escolha uma foto de até 12MB.')
       return
     }
 
-    setSelectedFile(file)
+    setOriginalFileName(file.name)
 
-    // Generate local preview
+    // Generate local preview & open cropper immediately
     const reader = new FileReader()
     reader.onload = (event) => {
-      setPreviewImage(event.target?.result as string)
+      const dataUrl = event.target?.result as string
+      setRawImageForCrop(dataUrl)
+      setShowCropper(true)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleCropComplete = (croppedBlob: Blob, croppedDataUrl: string) => {
+    const cleanName = originalFileName.replace(/\.[^/.]+$/, '') + '-cropped.jpg'
+    const file = new File([croppedBlob], cleanName, { type: 'image/jpeg' })
+    setSelectedFile(file)
+    setPreviewImage(croppedDataUrl)
+    setShowCropper(false)
+  }
+
+  const handleCropCancel = () => {
+    setShowCropper(false)
+    if (!selectedFile) {
+      setRawImageForCrop(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   const handleRemoveSelectedFile = () => {
     setSelectedFile(null)
     setPreviewImage(null)
+    setRawImageForCrop(null)
+    setShowCropper(false)
     setUploadError(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
@@ -242,6 +270,16 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
             </button>
           </div>
 
+          {/* Cropper Modal when an image is selected */}
+          {showCropper && rawImageForCrop && (
+            <ImageCropper
+              imageSrc={rawImageForCrop}
+              aspectRatio={category === 'hero' ? 16 / 9 : 16 / 10}
+              onCropComplete={handleCropComplete}
+              onCancel={handleCropCancel}
+            />
+          )}
+
           {uploadError && (
             <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -252,19 +290,35 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
           {/* PHOTO REPLACEMENT & UPLOAD ZONE */}
           <div className="bg-stone-50/90 p-5 sm:p-6 rounded-2xl border border-stone-200 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Upload className="w-4 h-4 text-verde-600" />
-                {editingId ? 'Escolher Nova Foto no PC' : 'Escolher Foto no PC'}
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Upload className="w-4 h-4 text-verde-600" />
+                  {editingId ? 'Escolher Nova Foto no PC' : 'Escolher Foto no PC'}
+                </label>
+
+                {rawImageForCrop && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCropper(true)}
+                    className="text-[11px] font-bold text-verde-700 hover:text-verde-800 bg-verde-100/80 hover:bg-verde-200/80 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Scissors className="w-3.5 h-3.5" />
+                    Recortar Novamente
+                  </button>
+                )}
+              </div>
               
               <div className="flex flex-col gap-2">
                 <label className="flex flex-col items-center justify-center border-2 border-dashed border-verde-300 hover:border-verde-500 bg-white hover:bg-verde-50/40 rounded-2xl p-4 cursor-pointer transition-all">
-                  <Upload className="w-6 h-6 text-verde-600 mb-1.5" />
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Upload className="w-6 h-6 text-verde-600" />
+                    <Scissors className="w-5 h-5 text-verde-600" />
+                  </div>
                   <span className="text-xs font-bold text-stone-800">
-                    {selectedFile ? 'Trocar arquivo selecionado' : 'Clique para selecionar foto do seu computador'}
+                    {selectedFile ? 'Trocar arquivo selecionado' : 'Clique para selecionar foto do seu computador (com corte e zoom)'}
                   </span>
                   <span className="text-[11px] text-stone-500 mt-0.5">
-                    Formatos suportados: JPG, PNG, WebP, GIF (máximo 8MB)
+                    Formatos suportados: JPG, PNG, WebP, GIF — Ferramenta de enquadramento abrirá automaticamente
                   </span>
                   <input
                     ref={fileInputRef}

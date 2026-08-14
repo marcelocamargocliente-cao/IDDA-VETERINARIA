@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Service } from '../../types'
 import { supabase, isSupabaseConfigured } from '../../lib/supabase'
+import { ImageCropper } from './ImageCropper'
 import { 
   Plus, 
   Trash2, 
@@ -16,7 +17,8 @@ import {
   Sparkles,
   Database,
   Copy,
-  CheckCheck
+  CheckCheck,
+  Scissors
 } from 'lucide-react'
 
 interface ServiceManagerProps {
@@ -47,6 +49,9 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
   // File upload state for changing service photo
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [rawImageForCrop, setRawImageForCrop] = useState<string | null>(null)
+  const [showCropper, setShowCropper] = useState(false)
+  const [originalFileName, setOriginalFileName] = useState<string>('foto.jpg')
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null)
   const [showSqlGuide, setShowSqlGuide] = useState(false)
@@ -69,6 +74,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
     setEditingId(null)
     setSelectedFile(null)
     setPreviewImage(null)
+    setRawImageForCrop(null)
+    setShowCropper(false)
     setUploadError(null)
     setIsFormOpen(false)
     if (fileInputRef.current) fileInputRef.current.value = ''
@@ -85,6 +92,8 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
     setOrder(s.order)
     setSelectedFile(null)
     setPreviewImage(null)
+    setRawImageForCrop(null)
+    setShowCropper(false)
     setUploadError(null)
     setIsFormOpen(true)
   }
@@ -100,18 +109,37 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
       return
     }
 
-    if (file.size > 8 * 1024 * 1024) {
-      setUploadError('A imagem selecionada é muito grande. Escolha uma foto de até 8MB.')
+    if (file.size > 12 * 1024 * 1024) {
+      setUploadError('A imagem selecionada é muito grande. Escolha uma foto de até 12MB.')
       return
     }
 
-    setSelectedFile(file)
+    setOriginalFileName(file.name)
 
+    // Open image cropper automatically on selection
     const reader = new FileReader()
     reader.onload = (event) => {
-      setPreviewImage(event.target?.result as string)
+      const dataUrl = event.target?.result as string
+      setRawImageForCrop(dataUrl)
+      setShowCropper(true)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleCropComplete = (croppedBlob: Blob, croppedDataUrl: string) => {
+    const cleanName = originalFileName.replace(/\.[^/.]+$/, '') + '-cropped.jpg'
+    const file = new File([croppedBlob], cleanName, { type: 'image/jpeg' })
+    setSelectedFile(file)
+    setPreviewImage(croppedDataUrl)
+    setShowCropper(false)
+  }
+
+  const handleCropCancel = () => {
+    setShowCropper(false)
+    if (!selectedFile) {
+      setRawImageForCrop(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   const uploadImageFile = async (file: File, serviceId?: string): Promise<string> => {
@@ -353,14 +381,37 @@ CREATE POLICY "Services are editable by all" ON services
                 </div>
               )}
 
+              {/* Cropper Modal when an image is selected */}
+              {showCropper && rawImageForCrop && (
+                <ImageCropper
+                  imageSrc={rawImageForCrop}
+                  aspectRatio={16 / 10}
+                  onCropComplete={handleCropComplete}
+                  onCancel={handleCropCancel}
+                />
+              )}
+
               <form id="service-form" onSubmit={handleSubmit} className="space-y-6">
                 
                 {/* Photo Upload & Preview Box */}
                 <div className="bg-stone-50 p-5 rounded-2xl border border-stone-200 space-y-4">
-                  <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <Upload className="w-4 h-4 text-verde-600" />
-                    Foto do Serviço (Upload do Computador)
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Upload className="w-4 h-4 text-verde-600" />
+                      Foto do Serviço (Upload do Computador)
+                    </label>
+
+                    {rawImageForCrop && (
+                      <button
+                        type="button"
+                        onClick={() => setShowCropper(true)}
+                        className="text-[11px] font-bold text-verde-700 hover:text-verde-800 bg-verde-100/80 hover:bg-verde-200/80 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Scissors className="w-3.5 h-3.5" />
+                        Recortar Novamente
+                      </button>
+                    )}
+                  </div>
 
                   {/* Previews (Current or New) */}
                   <div className="relative aspect-[16/10] bg-stone-200 rounded-xl overflow-hidden border border-stone-300">
@@ -377,19 +428,22 @@ CREATE POLICY "Services are editable by all" ON services
 
                     {(previewImage || imageUrl) && (
                       <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-xs">
-                        {previewImage ? 'Nova foto selecionada' : 'Foto atual'}
+                        {previewImage ? 'Foto recortada e pronta' : 'Foto atual'}
                       </div>
                     )}
                   </div>
 
                   {/* File input */}
                   <label className="flex flex-col items-center justify-center border-2 border-dashed border-verde-400 hover:border-verde-600 bg-white hover:bg-verde-50/50 rounded-xl p-4 cursor-pointer transition-all">
-                    <Upload className="w-5 h-5 text-verde-600 mb-1" />
+                    <div className="flex items-center gap-2 mb-1">
+                      <Upload className="w-5 h-5 text-verde-600" />
+                      <Scissors className="w-4 h-4 text-verde-600" />
+                    </div>
                     <span className="text-xs font-bold text-stone-800">
-                      {selectedFile ? selectedFile.name : 'Clique para selecionar foto do seu PC'}
+                      {selectedFile ? selectedFile.name : 'Clique para selecionar foto do seu PC (com ajuste e corte)'}
                     </span>
                     <span className="text-[10px] text-stone-500 mt-0.5">
-                      JPG, PNG, WebP ou GIF (máximo 8MB)
+                      JPG, PNG, WebP ou GIF — Uma ferramenta de corte e zoom abrirá automaticamente!
                     </span>
                     <input
                       ref={fileInputRef}
