@@ -10,7 +10,7 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
-  const { getSetting } = useSiteSettings()
+  const { getSetting, loading } = useSiteSettings()
   const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
   const settingHeroImage = getSetting('hero_image', '')
@@ -93,16 +93,22 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
           <div className="lg:col-span-5">
             <div className="p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
               <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm h-80 sm:h-96 lg:h-[420px] group">
-                <img
-                  src={imageUrl}
-                  alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
-                  referrerPolicy="no-referrer"
-                  onError={(e) => {
-                    const target = e.currentTarget
-                    target.src = defaultHeroDogImage
-                  }}
-                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                />
+                {loading ? (
+                  <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse flex items-center justify-center">
+                    <span className="text-stone-400 text-sm font-medium">Carregando foto...</span>
+                  </div>
+                ) : (
+                  <img
+                    src={imageUrl}
+                    alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget
+                      target.src = defaultHeroDogImage
+                    }}
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
               </div>
             </div>
           </div>
