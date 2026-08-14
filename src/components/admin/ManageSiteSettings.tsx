@@ -1,22 +1,18 @@
 import React, { useState, useRef } from 'react'
-import { Upload, X } from 'lucide-react'
-import { supabase } from '../../lib/supabase'
+import { Upload, X, ImageIcon } from 'lucide-react'
+import { useSiteSettings } from '../../hooks/useSiteSettings'
 
-interface ManageSiteSettingsProps {
-  onPhotoSaved?: (url: string) => void
-  currentPhotoUrl?: string
-}
+export const ManageSiteSettings: React.FC = () => {
+  const { getSetting, updateSetting, uploadSettingImage } = useSiteSettings()
 
-export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({ 
-  onPhotoSaved,
-  currentPhotoUrl 
-}) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState(0)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const currentHeroUrl = getSetting('hero_image', '')
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -33,8 +29,7 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
     }
 
     setSelectedFile(file)
-    const preview = URL.createObjectURL(file)
-    setPreviewUrl(preview)
+    setPreviewUrl(URL.createObjectURL(file))
     setMessage(null)
   }
 
@@ -49,46 +44,32 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
       setUploadProgress(30)
       setMessage(null)
 
-      const fileName = `hero-${Date.now()}.jpg`
-      const { error: uploadError } = await supabase.storage
-        .from('site_images')
-        .upload(fileName, selectedFile, { upsert: true })
+      // Usa o uploadSettingImage do hook — salva no bucket idda-photos
+      const imageUrl = await uploadSettingImage(selectedFile, 'hero_image')
+      setUploadProgress(70)
 
-      if (uploadError) throw uploadError
-      setUploadProgress(60)
+      if (!imageUrl) {
+        throw new Error('Não foi possível obter a URL da imagem')
+      }
 
-      const { data: urlData } = supabase.storage
-        .from('site_images')
-        .getPublicUrl(fileName)
-
-      const imageUrl = urlData.publicUrl
-      setUploadProgress(80)
-
-      const { error: dbError } = await supabase
-        .from('site_settings')
-        .upsert({
-          key: 'hero_image',
-          value: imageUrl,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'key' })
-
-      if (dbError) throw dbError
+      // Salva a URL em site_settings via hook
+      const saved = await updateSetting('hero_image', imageUrl, 'Foto principal do Hero')
       setUploadProgress(100)
 
-      setTimeout(() => {
-        setMessage({ type: 'success', text: '✅ Foto salva com sucesso!' })
-        if (onPhotoSaved) onPhotoSaved(imageUrl)
-        
+      if (saved) {
+        setMessage({ type: 'success', text: '✅ Foto salva com sucesso! Recarregue a página para ver.' })
         setSelectedFile(null)
         setPreviewUrl('')
         setUploadProgress(0)
         if (fileInputRef.current) fileInputRef.current.value = ''
-      }, 500)
+      } else {
+        throw new Error('Falha ao salvar configuração')
+      }
 
     } catch (error) {
       console.error('Erro ao fazer upload:', error)
       const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido'
-      setMessage({ type: 'error', text: `❌ Erro ao salvar foto: ${errorMsg}` })
+      setMessage({ type: 'error', text: `❌ Erro: ${errorMsg}` })
       setUploadProgress(0)
     } finally {
       setIsUploading(false)
@@ -107,102 +88,100 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
     <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-sm space-y-6 max-w-3xl">
       <div>
         <h3 className="font-display font-bold text-xl text-stone-900 flex items-center gap-2">
-          <Upload className="w-5 h-5 text-verde-600" />
-          Editar Foto do Hero
+          <ImageIcon className="w-5 h-5 text-[#6B8E6F]" />
+          Foto do Hero
         </h3>
         <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-          Altere a foto principal exibida na página inicial da clínica
+          Altere a foto principal exibida na seção inicial da clínica
         </p>
       </div>
 
+      {/* Mensagem de feedback */}
       {message && (
-        <div className={`p-4 rounded-lg border ${
-          message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-800' 
+        <div className={`p-4 rounded-xl border text-sm font-medium ${
+          message.type === 'success'
+            ? 'bg-green-50 border-green-200 text-green-800'
             : 'bg-red-50 border-red-200 text-red-800'
         }`}>
-          <p className="text-sm font-medium">{message.text}</p>
+          {message.text}
         </div>
       )}
 
-      {currentPhotoUrl && !previewUrl && (
-        <div className="p-4 bg-stone-50 rounded-lg">
-          <p className="text-xs text-stone-600 mb-2 font-semibold">Foto Atual:</p>
-          <img 
-            src={currentPhotoUrl} 
+      {/* Foto atual */}
+      {currentHeroUrl && !previewUrl && (
+        <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
+          <p className="text-xs text-stone-500 mb-2 font-semibold uppercase tracking-wider">Foto Atual:</p>
+          <img
+            src={currentHeroUrl}
             alt="Foto atual do hero"
-            className="w-full h-48 object-cover rounded"
+            className="w-full h-48 object-cover rounded-lg"
           />
         </div>
       )}
 
+      {/* Preview da nova foto */}
       {previewUrl && (
-        <div className="p-4 bg-verde-50 rounded-lg border-2 border-verde-200">
-          <p className="text-xs text-verde-700 mb-2 font-semibold">Nova Foto (Preview):</p>
-          <img 
-            src={previewUrl} 
-            alt="Preview da nova foto"
-            className="w-full h-48 object-cover rounded"
+        <div className="p-4 bg-[#6B8E6F]/10 rounded-xl border-2 border-[#6B8E6F]/30">
+          <p className="text-xs text-[#6B8E6F] mb-2 font-semibold uppercase tracking-wider">Nova Foto (Preview):</p>
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="w-full h-48 object-cover rounded-lg"
           />
-          <p className="text-xs text-stone-600 mt-2">
-            📁 Arquivo: {selectedFile?.name}
-          </p>
+          <p className="text-xs text-stone-500 mt-2">📁 {selectedFile?.name}</p>
         </div>
       )}
 
-      <div>
-        <label className="block">
-          <div className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-stone-300 rounded-lg cursor-pointer hover:border-verde-500 transition bg-stone-50">
-            <div className="text-center">
-              <p className="text-2xl mb-2">📤</p>
-              <p className="text-sm font-semibold text-stone-900">
-                Arraste a imagem aqui ou clique para selecionar
-              </p>
-              <p className="text-xs text-stone-600 mt-1">
-                Máximo: 5MB | Tipos: JPG, PNG, WebP
-              </p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleFileSelect}
-              disabled={isUploading}
-              className="hidden"
-            />
-          </div>
-        </label>
-      </div>
+      {/* Área de upload */}
+      <label className="block cursor-pointer">
+        <div className="flex flex-col items-center justify-center w-full px-4 py-10 border-2 border-dashed border-stone-300 rounded-xl hover:border-[#6B8E6F] transition bg-stone-50">
+          <Upload className="w-8 h-8 text-stone-400 mb-3" />
+          <p className="text-sm font-semibold text-stone-700">
+            Clique para selecionar ou arraste a imagem
+          </p>
+          <p className="text-xs text-stone-500 mt-1">JPG, PNG, WebP — máx. 5MB</p>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleFileSelect}
+          disabled={isUploading}
+          className="hidden"
+        />
+      </label>
 
-      {uploadProgress > 0 && uploadProgress < 100 && (
+      {/* Barra de progresso */}
+      {isUploading && (
         <div>
           <div className="flex justify-between items-center mb-2">
-            <p className="text-sm font-semibold text-stone-700">Upload em andamento...</p>
-            <p className="text-sm text-stone-600">{uploadProgress}%</p>
+            <p className="text-xs font-semibold text-stone-600 uppercase tracking-wider">Fazendo upload...</p>
+            <p className="text-xs text-stone-500">{uploadProgress}%</p>
           </div>
-          <div className="w-full bg-stone-200 rounded-full h-2">
+          <div className="w-full bg-stone-200 rounded-full h-1.5">
             <div
-              className="bg-verde-600 h-2 rounded-full transition-all duration-300"
+              className="bg-[#6B8E6F] h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
         </div>
       )}
 
+      {/* Botões */}
       <div className="flex gap-3">
         <button
           onClick={handleUpload}
           disabled={!selectedFile || isUploading}
-          className="flex-1 bg-verde-600 hover:bg-verde-700 disabled:bg-stone-300 text-white px-6 py-3 rounded-lg font-bold text-xs uppercase tracking-wider transition"
+          className="flex-1 flex items-center justify-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] disabled:bg-stone-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition"
         >
-          {isUploading ? '⏳ Salvando...' : '💾 Salvar Foto'}
+          <Upload className="w-4 h-4" />
+          {isUploading ? 'Salvando...' : 'Salvar Foto'}
         </button>
-        
-        {selectedFile && (
+
+        {selectedFile && !isUploading && (
           <button
             onClick={handleCancel}
-            disabled={isUploading}
-            className="px-6 py-3 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 transition flex items-center gap-2"
+            className="px-5 py-3 border border-stone-300 text-stone-600 rounded-xl hover:bg-stone-50 transition flex items-center gap-2 text-xs font-semibold"
           >
             <X className="w-4 h-4" />
             Cancelar
@@ -210,9 +189,9 @@ export const ManageSiteSettings: React.FC<ManageSiteSettingsProps> = ({
         )}
       </div>
 
-      <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-        ℹ️ A foto será sincronizada em todos os dispositivos após o upload.
-      </div>
+      <p className="text-xs text-stone-400 text-center">
+        A foto é sincronizada automaticamente em todos os dispositivos via Supabase.
+      </p>
     </div>
   )
 }
