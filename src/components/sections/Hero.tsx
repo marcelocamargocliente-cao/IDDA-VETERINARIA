@@ -89,10 +89,12 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
 
           </div>
 
-          {/* Right Column: Hero Visual with Elegant Beige Frame */}
-          <div className="lg:col-span-5">
-            <div className="relative p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
-              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm aspect-[16/9] group">
+          {/* Right Column: Hero Visual with Elegant Beige Frame & Testimonial Below */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            
+            {/* Card com Imagem - Aumentado */}
+            <div className="p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
+              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm h-80 sm:h-96 lg:h-[460px] group">
                 <img
                   src={imageUrl}
                   alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
@@ -103,27 +105,32 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
                   }}
                   className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/75 via-transparent to-transparent pointer-events-none" />
-
-                {/* Floating Social Proof Card */}
-                <div className="absolute bottom-5 left-5 right-5 bg-[#FFFFFF]/95 backdrop-blur-md p-4 rounded-xl border border-[#D4C5B9]/70 shadow-md">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="flex text-[#D4A574] text-xs">★★★★★</div>
-                    <span className="text-[10px] font-bold text-[#6B8E6F] uppercase tracking-wider bg-[#F5F1ED] px-2 py-0.5 rounded">
-                      Tutor Verificado
-                    </span>
-                  </div>
-                  <p className="text-xs italic text-[#4A4A4A] leading-snug">
-                    "Atendimento atencioso, rápido amor pelos animais. Estrutura completa com exames e consultas!"
-                  </p>
-                  <div className="mt-2 text-[11px] font-bold text-[#1A1A1A] flex items-center justify-between">
-                    <span>— IDDA Veterinária</span>
-                    <span className="text-[10px] text-[#6B8E6F] font-semibold">Cosmos, RJ</span>
-                  </div>
-                </div>
               </div>
             </div>
+
+            {/* Depoimento - Abaixo da imagem (fora do card visual) */}
+            <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-[#6B8E6F] border-t border-r border-b border-stone-200">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                </div>
+                <span className="text-[10px] font-bold text-[#6B8E6F] uppercase tracking-wider bg-[#dcf5e7]/60 px-2 py-0.5 rounded">
+                  Tutor Verificado
+                </span>
+              </div>
+              <p className="text-xs italic text-[#4A4A4A] leading-relaxed mb-3">
+                "Atendimento atencioso, rápido amor pelos animais. Estrutura completa com exames e consultas!"
+              </p>
+              <div className="flex justify-between items-end text-xs">
+                <span className="font-bold text-[#1A1A1A]">IDDA Veterinária</span>
+                <span className="text-stone-500 font-medium">Cosmos, RJ</span>
+              </div>
+            </div>
+
           </div>
 
         </div>
