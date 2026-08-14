@@ -3,7 +3,7 @@ import { Calendar, ArrowRight, ShieldCheck, Heart, Sparkles, Star } from 'lucide
 import { Photo } from '../../types'
 import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
 import { CLINIC_CONFIG } from '../../config/constants'
-import defaultHeroDogImage from '../../assets/images/idda_hero_golden_retriever_1786668872909.jpg'
+import defaultHeroDogImage from '../../assets/images/idda_hero_dog_sign_1786669546566.jpg'
 
 interface HeroProps {
   heroPhoto?: Photo
@@ -92,7 +92,7 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
           {/* Right Column: Hero Visual with Elegant Beige Frame */}
           <div className="lg:col-span-5">
             <div className="relative p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
-              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm aspect-[4/5] group">
+              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm aspect-[3/4] group">
                 <img
                   src={imageUrl}
                   alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
