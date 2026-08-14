@@ -1,5 +1,5 @@
-import React from 'react'
-import { Calendar, ArrowRight, ShieldCheck, Heart, Sparkles, Star } from 'lucide-react'
+import React, { useState } from 'react'
+import { Calendar, ArrowRight, ShieldCheck, Heart, Sparkles, Star, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
 import { Photo } from '../../types'
 import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
 import { CLINIC_CONFIG } from '../../config/constants'
@@ -15,6 +15,31 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
 
   const settingHeroImage = getSetting('hero_image', '')
   const imageUrl = settingHeroImage || heroPhoto?.url || defaultHeroDogImage || DEFAULT_SITE_SETTINGS.hero_image
+
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  const slides = [
+    {
+      image: imageUrl,
+      category: 'CLÍNICA',
+      title: 'Atendimento carinhoso e humanizado para cães e gatos'
+    },
+    {
+      image: defaultHeroDogImage,
+      category: 'ESTRUTURA',
+      title: 'Equipamentos modernos e ambiente climatizado'
+    }
+  ]
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+  }
+
+  const activeSlide = slides[currentSlide]
 
   return (
     <section id="inicio" className="relative pt-24 pb-12 md:pt-28 md:pb-20 overflow-hidden bg-[#F5F1ED]">
@@ -89,15 +114,13 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
 
           </div>
 
-          {/* Right Column: Hero Visual with Elegant Beige Frame & Testimonial Below */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            
-            {/* Card com Imagem - Aumentado */}
+          {/* Right Column: Hero Visual with Elegant Beige Frame & Interactive Slide */}
+          <div className="lg:col-span-5">
             <div className="p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
-              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm h-80 sm:h-96 lg:h-[460px] group">
+              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm h-80 sm:h-96 lg:h-[420px] group">
                 <img
-                  src={imageUrl}
-                  alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
+                  src={activeSlide.image}
+                  alt={activeSlide.title}
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const target = e.currentTarget
@@ -105,32 +128,43 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
                   }}
                   className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 />
-              </div>
-            </div>
 
-            {/* Depoimento - Abaixo da imagem (fora do card visual) */}
-            <div className="bg-white rounded-2xl shadow-md p-5 border-l-4 border-[#6B8E6F] border-t border-r border-b border-stone-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
-                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
-                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
-                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
-                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                {/* Gradient Overlay for Caption */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+                {/* Left / Right Navigation Arrows */}
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-[#1A1A1A] rounded-full p-2 transition shadow-md z-10 opacity-80 hover:opacity-100"
+                  aria-label="Slide anterior"
+                >
+                  <ChevronLeft className="w-5 h-5 text-[#6B8E6F]" />
+                </button>
+
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-[#1A1A1A] rounded-full p-2 transition shadow-md z-10 opacity-80 hover:opacity-100"
+                  aria-label="Próximo slide"
+                >
+                  <ChevronRight className="w-5 h-5 text-[#6B8E6F]" />
+                </button>
+
+                {/* Expand / Maximize Button */}
+                <div className="absolute top-3 right-3 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 transition backdrop-blur-xs cursor-pointer z-10">
+                  <Maximize2 className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-bold text-[#6B8E6F] uppercase tracking-wider bg-[#dcf5e7]/60 px-2 py-0.5 rounded">
-                  Tutor Verificado
-                </span>
-              </div>
-              <p className="text-xs italic text-[#4A4A4A] leading-relaxed mb-3">
-                "Atendimento atencioso, rápido amor pelos animais. Estrutura completa com exames e consultas!"
-              </p>
-              <div className="flex justify-between items-end text-xs">
-                <span className="font-bold text-[#1A1A1A]">IDDA Veterinária</span>
-                <span className="text-stone-500 font-medium">Cosmos, RJ</span>
+
+                {/* Caption / Overlay Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 z-10 text-white">
+                  <span className="inline-block bg-[#6B8E6F] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md mb-2 shadow-xs">
+                    {activeSlide.category}
+                  </span>
+                  <p className="text-sm sm:text-base font-semibold leading-snug text-stone-100">
+                    {activeSlide.title}
+                  </p>
+                </div>
               </div>
             </div>
-
           </div>
 
         </div>
