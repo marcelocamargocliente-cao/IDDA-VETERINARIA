@@ -1,121 +1,118 @@
-import React, { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import React from 'react'
+import { Calendar, ArrowRight, Sparkles, Star } from 'lucide-react'
+import { Photo } from '../../types'
+import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
+import { CLINIC_CONFIG } from '../../config/constants'
+import defaultHeroDogImage from '../../assets/images/idda_hero_horizontal_16_9_1786671030992.jpg'
 
 interface HeroProps {
-  heroPhoto?: any
+  heroPhoto?: Photo
 }
 
-export const Hero: React.FC<HeroProps> = () => {
-  const [heroImageUrl, setHeroImageUrl] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(true)
+export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
+  const { getSetting, loading } = useSiteSettings()
+  const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
-  useEffect(() => {
-    loadHeroImage()
-  }, [])
-
-  const loadHeroImage = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'hero_image')
-        .single()
-      
-      if (error && error.code !== 'PGRST116') throw error
-      if (data?.value) {
-        setHeroImageUrl(data.value)
-      }
-    } catch (error) {
-      console.error('Erro ao carregar foto hero:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <section className="py-20">
-        <div className="h-96 lg:h-[420px] bg-gray-200 rounded-3xl animate-pulse" />
-      </section>
-    )
-  }
+  const settingHeroImage = getSetting('hero_image', '')
+  const imageUrl = settingHeroImage || heroPhoto?.url || defaultHeroDogImage || DEFAULT_SITE_SETTINGS.hero_image
 
   return (
-    <section className="py-20">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-        {/* Texto (lado esquerdo) */}
-        <div className="lg:-mt-16">
-          <div className="inline-block mb-4 px-4 py-2 border border-verde-600 rounded-full">
-            <span className="text-sm text-verde-600">✨ CUIDADO VETERINÁRIO PREMIUM</span>
-          </div>
-          
-          <h1 className="text-4xl lg:text-5xl font-bold text-stone-900 mb-4">
-            Saúde que seu pet merece.
-          </h1>
-          
-          <p className="text-xl lg:text-2xl text-verde-600 italic mb-4">
-            Amor que ele reconheça.
-          </p>
-          
-          <p className="text-stone-700 mb-6">
-            Combinamos tecnologia de ponta com atendimento humanizado.
-            Porque seu pet não é só animal de estimação — é família.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-verde-600 hover:bg-verde-700 text-white px-8 py-3 rounded-lg font-semibold transition">
-              📅 AGENDAR AGORA
-            </button>
-            <button className="border-2 border-verde-600 text-verde-600 hover:bg-verde-50 px-8 py-3 rounded-lg font-semibold transition">
-              CONHECER SERVIÇOS →
-            </button>
-          </div>
+    <section id="inicio" className="relative pt-24 pb-12 md:pt-28 md:pb-20 overflow-hidden bg-[#F5F1ED]">
+      {/* Decorative Subtle Ambient Elements */}
+      <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 rounded-full bg-[#D4C5B9]/40 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-96 h-96 rounded-full bg-[#6B8E6F]/10 blur-3xl pointer-events-none" />
 
-          {/* Depoimento */}
-          <div className="mt-8 pt-8 border-t border-stone-200">
-            <div className="flex gap-1 mb-2">
-              ⭐⭐⭐⭐⭐
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+          
+          {/* Left Column: Hero Text & Actions */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            {/* Small Badge */}
+            <div className="inline-flex items-center gap-2 bg-[#FFFFFF] border border-[#D4C5B9] text-[#8B7355] px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#6B8E6F]" />
+              <span>Cuidado Veterinário Premium</span>
             </div>
-            <p className="text-sm text-stone-700 italic">
-              "Meu cachorro é tratado como família aqui. Recomendo muito!"
+
+            {/* Main Serif Heading */}
+            <h1 className="font-serif-heading text-4xl sm:text-5xl md:text-6xl font-bold text-[#1A1A1A] leading-[1.1] tracking-[-0.03em]">
+              Saúde que seu pet merece. <br />
+              <span className="italic text-[#6B8E6F] font-normal">Amor que ele reconhece.</span>
+            </h1>
+
+            {/* Subheading Body */}
+            <p className="text-[#4A4A4A] text-base sm:text-lg leading-[1.6] max-w-xl font-normal">
+              Combinamos tecnologia de ponta com atendimento humanizado. Porque seu pet não é só animal de estimação — <strong className="text-[#1A1A1A] font-semibold">é família</strong>.
             </p>
-            <p className="text-sm font-semibold text-stone-900 mt-2">
-              — Maria Silva
-            </p>
-          </div>
-        </div>
-        
-        {/* Foto (lado direito) */}
-        <div className="rounded-3xl overflow-hidden h-96 lg:h-[420px] shadow-lg">
-          {heroImageUrl ? (
-            <img 
-              src={heroImageUrl} 
-              alt="IDDA Veterinária"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-stone-200 to-stone-300 flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-stone-600 text-lg">Foto em breve</p>
+
+            {/* CTA Buttons - Lado a Lado */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white px-8 py-3.5 rounded-lg font-bold text-xs uppercase tracking-wider shadow-sm transition-all transform hover:-translate-y-0.5"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Agendar Agora</span>
+              </a>
+
+              <a
+                href="#servicos"
+                className="flex items-center justify-center gap-2 border-2 border-[#6B8E6F] text-[#6B8E6F] hover:bg-[#FFFFFF] px-8 py-3.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all"
+              >
+                <span>Conhecer Serviços</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+
+            {/* Trust Indicators (3 Columns) */}
+            <div className="grid grid-cols-3 gap-6 pt-8 border-t border-[#D4C5B9]/60 max-w-lg">
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] font-serif-heading">10k+</div>
+                <div className="text-xs uppercase tracking-wider font-semibold text-[#888888] mt-0.5">Pets Felizes</div>
+              </div>
+
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] font-serif-heading">6+</div>
+                <div className="text-xs uppercase tracking-wider font-semibold text-[#888888] mt-0.5">Serviços Clínicos</div>
+              </div>
+
+              <div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#6B8E6F] font-serif-heading flex items-center gap-1">
+                  <span>5.0</span>
+                  <Star className="w-4 h-4 fill-[#D4A574] text-[#D4A574]" />
+                </div>
+                <div className="text-xs uppercase tracking-wider font-semibold text-[#888888] mt-0.5">Avaliação Google</div>
               </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-stone-200">
-        <div>
-          <p className="text-3xl font-bold text-stone-900">10k+</p>
-          <p className="text-stone-600">Pets felizes</p>
-        </div>
-        <div>
-          <p className="text-3xl font-bold text-stone-900">6+</p>
-          <p className="text-stone-600">Serviços clínicos</p>
-        </div>
-        <div>
-          <p className="text-3xl font-bold text-stone-900">5.0 ⭐</p>
-          <p className="text-stone-600">Avaliação Google</p>
+          </div>
+
+          {/* Right Column: Hero Visual with Elegant Beige Frame & Single Clean Image */}
+          <div className="lg:col-span-5">
+            <div className="p-3 sm:p-4 bg-[#D4C5B9]/60 rounded-3xl shadow-lg border border-[#D4C5B9]">
+              <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm h-80 sm:h-96 lg:h-[420px] group">
+                {loading ? (
+                  <div className="w-full h-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse flex items-center justify-center">
+                    <span className="text-stone-400 text-sm font-medium">Carregando foto...</span>
+                  </div>
+                ) : (
+                  <img
+                    src={imageUrl}
+                    alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget
+                      target.src = defaultHeroDogImage
+                    }}
+                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
