@@ -1,4 +1,4 @@
-mport { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { SiteSetting } from '../types'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
