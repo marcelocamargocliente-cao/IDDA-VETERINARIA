@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { SiteSetting } from '../types'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import { supabase, supabaseAdmin, isSupabaseConfigured } from '../lib/supabase'
 
 export const DEFAULT_SITE_SETTINGS: Record<string, string> = {
   location_image: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80',
@@ -81,7 +81,8 @@ export function useSiteSettings() {
 
       if (isSupabaseConfigured) {
         try {
-          const { error } = await supabase
+          // usa supabaseAdmin para garantir permissão de escrita
+          const { error } = await supabaseAdmin
             .from('site_settings')
             .upsert(
               {
@@ -121,7 +122,8 @@ export function useSiteSettings() {
             ? blobOrFile
             : new File([blobOrFile], fileName, { type: 'image/jpeg' })
 
-        const { data, error } = await supabase.storage
+        // ✅ FIX: usa supabaseAdmin (service_role) para bypassar RLS no Storage
+        const { data, error } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(fileName, fileToUpload, {
             cacheControl: '3600',
@@ -129,9 +131,13 @@ export function useSiteSettings() {
           })
 
         if (error) {
-          console.warn('Upload no storage idda-photos falhou, convertendo em DataURL:', error.message)
-        } else if (data) {
-          const { data: publicUrlData } = supabase.storage
+          console.error('❌ Erro no upload (admin):', error.message)
+          throw error
+        }
+
+        if (data) {
+          // getPublicUrl não precisa de auth
+          const { data: publicUrlData } = supabaseAdmin.storage
             .from('idda-photos')
             .getPublicUrl(data.path)
 
@@ -140,21 +146,12 @@ export function useSiteSettings() {
           }
         }
       } catch (err: any) {
-        console.warn('Erro durante upload de imagem para setting:', err.message)
+        console.error('❌ Erro crítico durante upload:', err.message)
+        throw err
       }
     }
 
-    // Local fallback: convert Blob to base64 data URL
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        resolve(reader.result as string)
-      }
-      reader.onerror = () => {
-        resolve(null)
-      }
-      reader.readAsDataURL(blobOrFile)
-    })
+    return null
   }
 
   return {
