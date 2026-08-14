@@ -310,12 +310,13 @@ CREATE POLICY "Services are editable by all" ON services
 
       {/* Edit / Create Form Modal */}
       {isFormOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-stone-200">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-stone-200 overflow-hidden">
             
-            <div className="flex items-center justify-between border-b border-stone-100 pb-4 mb-6">
+            {/* Sticky Header */}
+            <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-5 sm:px-8 sm:py-6 flex items-center justify-between z-10">
               <div>
-                <h4 className="font-display font-bold text-stone-900 text-xl flex items-center gap-2">
+                <h4 className="font-display font-bold text-stone-900 text-lg sm:text-xl flex items-center gap-2">
                   {editingId ? (
                     <>
                       <Edit2 className="w-5 h-5 text-verde-600" />
@@ -329,202 +330,211 @@ CREATE POLICY "Services are editable by all" ON services
                   )}
                 </h4>
                 <p className="text-xs text-stone-500 mt-1">
-                  Selecione uma imagem do seu computador ou altere as informações do serviço.
+                  Altere a foto e as informações do serviço e clique em Salvar Mudanças abaixo.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={resetForm}
-                className="text-stone-400 hover:text-stone-700 p-1.5 rounded-lg hover:bg-stone-100 transition-colors"
+                className="text-stone-400 hover:text-stone-700 p-2 rounded-xl hover:bg-stone-100 transition-colors"
+                title="Fechar formulário"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {uploadError && (
-              <div className="mb-5 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{uploadError}</span>
-              </div>
-            )}
+            {/* Scrollable Form Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 sm:py-6 space-y-6">
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              
-              {/* Photo Upload & Preview Box */}
-              <div className="bg-stone-50 p-5 rounded-2xl border border-stone-200 space-y-4">
-                <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <Upload className="w-4 h-4 text-verde-600" />
-                  Foto do Serviço (Upload do Computador)
-                </label>
-
-                {/* Previews (Current or New) */}
-                <div className="relative aspect-[16/10] bg-stone-200 rounded-xl overflow-hidden border border-stone-300">
-                  {previewImage ? (
-                    <img src={previewImage} alt="Preview selecionada" className="w-full h-full object-cover" />
-                  ) : imageUrl ? (
-                    <img src={imageUrl} alt="Foto atual" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 text-xs">
-                      <ImageIcon className="w-8 h-8 mb-1" />
-                      <span>Nenhuma foto configurada</span>
-                    </div>
-                  )}
-
-                  {(previewImage || imageUrl) && (
-                    <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-xs">
-                      {previewImage ? 'Nova foto pronta para upload' : 'Foto atual'}
-                    </div>
-                  )}
+              {uploadError && (
+                <div className="p-3.5 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{uploadError}</span>
                 </div>
+              )}
 
-                {/* File input */}
-                <label className="flex flex-col items-center justify-center border-2 border-dashed border-verde-300 hover:border-verde-500 bg-white hover:bg-verde-50/40 rounded-xl p-4 cursor-pointer transition-all">
-                  <Upload className="w-5 h-5 text-verde-600 mb-1" />
-                  <span className="text-xs font-bold text-stone-800">
-                    {selectedFile ? selectedFile.name : 'Clique para selecionar foto do seu PC'}
-                  </span>
-                  <span className="text-[10px] text-stone-500 mt-0.5">
-                    JPG, PNG, WebP ou GIF (máximo 8MB)
-                  </span>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </label>
-
-                {/* Optional Direct URL input */}
-                <div>
-                  <label className="block text-[11px] font-semibold text-stone-600 mb-1">
-                    Ou informe a URL direta da imagem (opcional)
+              <form id="service-form" onSubmit={handleSubmit} className="space-y-6">
+                
+                {/* Photo Upload & Preview Box */}
+                <div className="bg-stone-50 p-5 rounded-2xl border border-stone-200 space-y-4">
+                  <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Upload className="w-4 h-4 text-verde-600" />
+                    Foto do Serviço (Upload do Computador)
                   </label>
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => {
-                      setImageUrl(e.target.value)
-                      if (!selectedFile) setPreviewImage(null)
-                    }}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="w-full px-3.5 py-2 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
-                  />
-                </div>
-              </div>
 
-              {/* Title & Badge */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Previews (Current or New) */}
+                  <div className="relative aspect-[16/10] bg-stone-200 rounded-xl overflow-hidden border border-stone-300">
+                    {previewImage ? (
+                      <img src={previewImage} alt="Preview selecionada" className="w-full h-full object-cover" />
+                    ) : imageUrl ? (
+                      <img src={imageUrl} alt="Foto atual" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 text-xs">
+                        <ImageIcon className="w-8 h-8 mb-1" />
+                        <span>Nenhuma foto configurada</span>
+                      </div>
+                    )}
+
+                    {(previewImage || imageUrl) && (
+                      <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-xs">
+                        {previewImage ? 'Nova foto selecionada' : 'Foto atual'}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* File input */}
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-verde-400 hover:border-verde-600 bg-white hover:bg-verde-50/50 rounded-xl p-4 cursor-pointer transition-all">
+                    <Upload className="w-5 h-5 text-verde-600 mb-1" />
+                    <span className="text-xs font-bold text-stone-800">
+                      {selectedFile ? selectedFile.name : 'Clique para selecionar foto do seu PC'}
+                    </span>
+                    <span className="text-[10px] text-stone-500 mt-0.5">
+                      JPG, PNG, WebP ou GIF (máximo 8MB)
+                    </span>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {/* Optional Direct URL input */}
+                  <div>
+                    <label className="block text-[11px] font-semibold text-stone-600 mb-1">
+                      Ou informe a URL direta da imagem (opcional)
+                    </label>
+                    <input
+                      type="url"
+                      value={imageUrl}
+                      onChange={(e) => {
+                        setImageUrl(e.target.value)
+                        if (!selectedFile) setPreviewImage(null)
+                      }}
+                      placeholder="https://images.unsplash.com/photo-..."
+                      className="w-full px-3.5 py-2 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Title & Badge */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Título do Serviço *</label>
+                    <input
+                      type="text"
+                      required
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Ex: Consultas Clínicas"
+                      className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Destaque / Badge (Opcional)</label>
+                    <input
+                      type="text"
+                      value={highlight}
+                      onChange={(e) => setHighlight(e.target.value)}
+                      placeholder="Ex: 24 Horas, Especialistas"
+                      className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Título do Serviço *</label>
-                  <input
-                    type="text"
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Descrição Detalhada *</label>
+                  <textarea
+                    rows={4}
                     required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Ex: Atendimento de Urgência & Emergência"
-                    className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800 font-medium"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Descreva o serviço em detalhes para os tutores..."
+                    className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800 leading-relaxed"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Destaque / Badge (Opcional)</label>
-                  <input
-                    type="text"
-                    value={highlight}
-                    onChange={(e) => setHighlight(e.target.value)}
-                    placeholder="Ex: 24 Horas, Especialistas, Bloco Cirúrgico"
-                    className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
-                  />
-                </div>
-              </div>
+                {/* Icon, Order & Active */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Ícone</label>
+                    <select
+                      value={icon}
+                      onChange={(e) => setIcon(e.target.value)}
+                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
+                    >
+                      <option value="ShieldAlert">ShieldAlert (Urgência)</option>
+                      <option value="Stethoscope">Stethoscope (Consultas)</option>
+                      <option value="Activity">Activity (Cirurgias)</option>
+                      <option value="ShieldCheck">ShieldCheck (Vacinas)</option>
+                      <option value="Microscope">Microscope (Exames)</option>
+                      <option value="HeartPulse">HeartPulse (Ultrassom/UTI)</option>
+                    </select>
+                  </div>
 
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">Descrição Detalhada *</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Descreva o serviço para os tutores..."
-                  className="w-full px-3.5 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800 leading-relaxed"
-                />
-              </div>
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Ordem de Exibição</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={order}
+                      onChange={(e) => setOrder(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
+                    />
+                  </div>
 
-              {/* Icon, Order & Active */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Ícone</label>
-                  <select
-                    value={icon}
-                    onChange={(e) => setIcon(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
-                  >
-                    <option value="ShieldAlert">ShieldAlert (Urgência)</option>
-                    <option value="Stethoscope">Stethoscope (Consultas)</option>
-                    <option value="Activity">Activity (Cirurgias)</option>
-                    <option value="ShieldCheck">ShieldCheck (Vacinas)</option>
-                    <option value="Microscope">Microscope (Exames)</option>
-                    <option value="HeartPulse">HeartPulse (Ultrassom/UTI)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">Ordem de Exibição</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={order}
-                    onChange={(e) => setOrder(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-500 text-stone-800"
-                  />
+                  <div className="pt-4 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="service_active"
+                      checked={active}
+                      onChange={(e) => setActive(e.target.checked)}
+                      className="w-4 h-4 text-verde-600 rounded focus:ring-verde-500 border-stone-300 cursor-pointer"
+                    />
+                    <label htmlFor="service_active" className="text-xs font-bold text-stone-700 cursor-pointer">
+                      Visível no Site
+                    </label>
+                  </div>
                 </div>
 
-                <div className="pt-4 flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="service_active"
-                    checked={active}
-                    onChange={(e) => setActive(e.target.checked)}
-                    className="w-4 h-4 text-verde-600 rounded focus:ring-verde-500 border-stone-300 cursor-pointer"
-                  />
-                  <label htmlFor="service_active" className="text-xs font-bold text-stone-700 cursor-pointer">
-                    Visível no Site
-                  </label>
-                </div>
-              </div>
+              </form>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-stone-100 text-stone-700 hover:bg-stone-200 transition-colors"
-                >
-                  Cancelar
-                </button>
+            {/* Sticky Bottom Action Buttons - ALWAYS VISIBLE */}
+            <div className="sticky bottom-0 bg-white border-t border-stone-200 px-6 py-4 sm:px-8 sm:py-5 flex items-center gap-4 z-10 shadow-lg">
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={submitting}
+                className="flex-1 bg-stone-200 hover:bg-stone-300 text-stone-700 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <X className="w-4 h-4 text-stone-500" />
+                <span>Cancelar</span>
+              </button>
 
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="px-6 py-2.5 rounded-xl text-xs font-bold bg-verde-600 hover:bg-verde-700 text-white flex items-center gap-2 shadow-md transition-all disabled:opacity-50"
-                >
-                  {submitting ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                      <span>Salvando no Supabase...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span>{editingId ? 'Salvar Alterações' : 'Cadastrar Serviço'}</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <button
+                type="submit"
+                form="service-form"
+                disabled={submitting || !title.trim() || !description.trim()}
+                className="flex-1 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Salvando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-5 h-5 text-white" />
+                    <span>{editingId ? 'Salvar Mudanças' : 'Cadastrar Serviço'}</span>
+                  </>
+                )}
+              </button>
+            </div>
 
-            </form>
           </div>
         </div>
       )}

@@ -9,7 +9,7 @@ import { PhotoCarousel } from './components/sections/PhotoCarousel'
 import { Testimonials } from './components/sections/Testimonials'
 import { CtaSection } from './components/sections/CtaSection'
 import { Location } from './components/sections/Location'
-import { WhatsAppFloat } from './components/sections/WhatsAppFloat'
+import { WhatsAppButton } from './components/sections/WhatsAppButton'
 import { AdminLogin } from './components/admin/AdminLogin'
 import { AdminDashboard } from './components/admin/AdminDashboard'
 
@@ -73,7 +73,7 @@ export default function App() {
       <Footer />
 
       {/* Floating WhatsApp Action Button */}
-      <WhatsAppFloat />
+      <WhatsAppButton />
 
       {/* Admin Login Modal */}
       {showAdminLogin && (
