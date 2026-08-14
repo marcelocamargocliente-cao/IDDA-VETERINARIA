@@ -160,6 +160,7 @@ export function useServices() {
           title: service.title,
           description: service.description,
           icon: service.icon || 'Stethoscope',
+          image: service.image_url || '',
           image_url: service.image_url || '',
           highlight: service.highlight || '',
           active: service.active ?? true,
@@ -190,6 +191,10 @@ export function useServices() {
         const payload: any = { ...updates, updated_at: new Date().toISOString() }
         if (updates.order !== undefined) {
           payload.order_display = updates.order
+        }
+        // Mapear image_url -> image para compatibilidade com a coluna real da tabela
+        if (updates.image_url !== undefined) {
+          payload.image = updates.image_url
         }
         const { error } = await supabase
           .from('services')
