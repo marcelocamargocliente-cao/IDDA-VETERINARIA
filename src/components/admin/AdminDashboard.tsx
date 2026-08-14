@@ -3,6 +3,7 @@ import { PhotoManager } from './PhotoManager'
 import { ServiceManager } from './ServiceManager'
 import { TestimonialManager } from './TestimonialManager'
 import { ManageSectionImages } from './ManageSectionImages'
+import { ManageSiteSettings } from './ManageSiteSettings'
 import { usePhotos } from '../../hooks/usePhotos'
 import { useServices } from '../../hooks/useServices'
 import { useTestimonials } from '../../hooks/useTestimonials'
@@ -31,7 +32,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'photos' | 'services' | 'testimonials' | 'sections' | 'settings'>('photos')
+  const [activeTab, setActiveTab] = useState<'photos' | 'services' | 'testimonials' | 'sections' | 'sitesettings' | 'settings'>('photos')
 
   const { photos, addPhoto, updatePhoto, deletePhoto } = usePhotos()
   const { services, addService, updateService, deleteService } = useServices()
@@ -173,6 +174,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClos
           </button>
 
           <button
+            onClick={() => setActiveTab('sitesettings')}
+            className={`flex items-center gap-2 px-5 py-3 font-semibold text-sm rounded-t-xl transition-all ${
+              activeTab === 'sitesettings'
+                ? 'bg-white text-verde-700 border-t-2 border-x border-verde-600 shadow-sm'
+                : 'text-stone-600 hover:text-stone-900 hover:bg-stone-200/50'
+            }`}
+          >
+            <Database className="w-4 h-4" />
+            <span>Configurações Supabase</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('settings')}
             className={`flex items-center gap-2 px-5 py-3 font-semibold text-sm rounded-t-xl transition-all ${
               activeTab === 'settings'
@@ -216,6 +229,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onClos
 
           {activeTab === 'sections' && (
             <ManageSectionImages />
+          )}
+
+          {activeTab === 'sitesettings' && (
+            <ManageSiteSettings />
           )}
 
           {activeTab === 'settings' && (
