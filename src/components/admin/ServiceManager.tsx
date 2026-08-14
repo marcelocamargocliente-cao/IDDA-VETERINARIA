@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Service } from '../../types'
-import { supabase, isSupabaseConfigured } from '../../lib/supabase'
+import { supabase, supabaseAdmin, isSupabaseConfigured } from "../../lib/supabase"
 import { ImageCropper } from './ImageCropper'
 import { 
   Plus, 
@@ -149,7 +149,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
         const cleanExt = fileExt.replace(/[^a-zA-Z0-9]/g, '')
         const fileName = `services/service-${serviceId || 'new'}-${Date.now()}.${cleanExt}`
 
-        const { error: storageError } = await supabase.storage
+        const { error: storageError } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(fileName, file, {
             cacheControl: '3600',
@@ -157,7 +157,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
           })
 
         if (!storageError) {
-          const { data } = supabase.storage
+          const { data } = supabaseAdmin.storage
             .from('idda-photos')
             .getPublicUrl(fileName)
 
