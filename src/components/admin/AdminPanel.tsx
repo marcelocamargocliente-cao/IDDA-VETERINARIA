@@ -182,7 +182,7 @@ export const AdminPanel: React.FC = () => {
       if (error) throw error
 
       showToast('Foto adicionada à galeria com sucesso!')
-      e.currentTarget.reset()
+      if (e.currentTarget) e.currentTarget.reset()
       loadAdminData()
     } catch (err: any) {
       alert(err.message || 'Erro ao adicionar foto')
