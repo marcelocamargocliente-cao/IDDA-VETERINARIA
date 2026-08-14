@@ -3,6 +3,7 @@ import { Calendar, ArrowRight, ShieldCheck, Heart, Sparkles, Star } from 'lucide
 import { Photo } from '../../types'
 import { useSiteSettings, DEFAULT_SITE_SETTINGS } from '../../hooks/useSiteSettings'
 import { CLINIC_CONFIG } from '../../config/constants'
+import defaultHeroDogImage from '../../assets/images/idda_hero_golden_retriever_1786668872909.jpg'
 
 interface HeroProps {
   heroPhoto?: Photo
@@ -12,8 +13,8 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
   const { getSetting } = useSiteSettings()
   const whatsappUrl = CLINIC_CONFIG.whatsappUrl('Olá! Gostaria de agendar uma consulta na IDDA Veterinária.')
 
-  const settingHeroImage = getSetting('hero_image', DEFAULT_SITE_SETTINGS.hero_image)
-  const imageUrl = settingHeroImage || heroPhoto?.url || DEFAULT_SITE_SETTINGS.hero_image
+  const settingHeroImage = getSetting('hero_image', '')
+  const imageUrl = settingHeroImage || heroPhoto?.url || defaultHeroDogImage || DEFAULT_SITE_SETTINGS.hero_image
 
   return (
     <section id="inicio" className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-[#F5F1ED]">
@@ -94,11 +95,11 @@ export const Hero: React.FC<HeroProps> = ({ heroPhoto }) => {
               <div className="relative bg-[#FFFFFF] rounded-2xl overflow-hidden shadow-sm aspect-[4/5] group">
                 <img
                   src={imageUrl}
-                  alt="Estrutura e Fachada IDDA Veterinária - Cosmos, Rio de Janeiro"
+                  alt="Golden Retriever em frente à Clínica IDDA Veterinária - Cosmos, Rio de Janeiro"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const target = e.currentTarget
-                    target.src = 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1200&q=80'
+                    target.src = defaultHeroDogImage
                   }}
                   className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 />
