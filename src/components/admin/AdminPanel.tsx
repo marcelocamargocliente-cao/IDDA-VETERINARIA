@@ -681,6 +681,10 @@ export const AdminPanel: React.FC = () => {
                             {heroFile ? heroFile.name : 'Clique para escolher nova foto do Hero'}
                           </span>
                           <span className="text-[11px] text-stone-500 mt-1">JPG, PNG, WebP — máx. 12MB</span>
+                          {/* Proporção direto no input */}
+                          <span className="mt-2 inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold px-3 py-1.5 rounded-lg">
+                            📐 Ideal: 900 × 840 px  |  Proporção 1:1 / 9:10  |  Vertical ou quadrada
+                          </span>
                           <input
                             type="file"
                             accept="image/*"
@@ -962,6 +966,10 @@ export const AdminPanel: React.FC = () => {
                             {locationFile ? locationFile.name : 'Clique para escolher nova foto de Localização'}
                           </span>
                           <span className="text-[11px] text-stone-500 mt-1">JPG, PNG, WebP — máx. 12MB</span>
+                          {/* Proporção direto no input */}
+                          <span className="mt-2 inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold px-3 py-1.5 rounded-lg">
+                            📐 Ideal: 1200 × 675 px  |  Proporção 16:9  |  Horizontal (fachada/clínica)
+                          </span>
                           <input
                             type="file"
                             accept="image/*"
