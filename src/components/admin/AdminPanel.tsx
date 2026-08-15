@@ -34,6 +34,7 @@ export const AdminPanel: React.FC = () => {
   const [locationFile, setLocationFile] = useState<File | null>(null)
   const [locationPreview, setLocationPreview] = useState<string>('')
   const [locationCaption, setLocationCaption] = useState<string>('')
+  const [galleryFilter, setGalleryFilter] = useState<'all' | 'gallery' | 'service'>('all')
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -430,30 +431,92 @@ export const AdminPanel: React.FC = () => {
                       </div>
 
                       <div className="bg-white p-6 rounded-3xl border border-[#D4C5B9] shadow-sm space-y-4">
-                        <h4 className="font-serif-heading font-bold text-lg text-[#1A1A1A]">Fotos Cadastradas ({photos.length})</h4>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {photos.map((photo) => (
-                            <div key={photo.id} className="bg-[#F5F1ED] rounded-2xl overflow-hidden border border-[#D4C5B9] flex flex-col justify-between">
-                              <div className="relative aspect-[16/10]">
-                                <img src={photo.url} alt={photo.caption} className="w-full h-full object-cover" />
-                                <span className="absolute top-2 right-2 bg-black/70 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                                  {photo.category}
-                                </span>
-                              </div>
-                              <div className="p-3.5 flex items-center justify-between gap-2">
-                                <p className="text-xs font-medium text-[#1A1A1A] truncate">{photo.caption}</p>
-                                <button
-                                  onClick={() => handleDeletePhoto(photo.id)}
-                                  className="w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 text-red-700 flex items-center justify-center transition-colors shrink-0"
-                                  title="Excluir Foto"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                        {/* Header com contador e filtro por categoria */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <h4 className="font-serif-heading font-bold text-lg text-[#1A1A1A]">
+                            Fotos Cadastradas ({photos.length})
+                          </h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {[
+                              { id: 'all', label: 'Todas', color: 'bg-stone-700 text-white' },
+                              { id: 'gallery', label: '🏥 Estrutura', color: 'bg-emerald-600 text-white' },
+                              { id: 'service', label: '⚙️ Equipamentos', color: 'bg-blue-600 text-white' },
+                            ].map((f) => (
+                              <button
+                                key={f.id}
+                                onClick={() => setGalleryFilter(f.id as any)}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-bold transition-all ${
+                                  galleryFilter === f.id
+                                    ? f.color + ' shadow-sm'
+                                    : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                                }`}
+                              >
+                                {f.label} ({f.id === 'all' ? photos.length : photos.filter(p => p.category === f.id).length})
+                              </button>
+                            ))}
+                          </div>
                         </div>
+
+                        {/* Grid de fotos */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {photos
+                            .filter(p => galleryFilter === 'all' || p.category === galleryFilter)
+                            .map((photo) => {
+                              const catLabel = photo.category === 'gallery' ? 'Estrutura & Clínica'
+                                : photo.category === 'service' ? 'Equipamentos & Procedimentos'
+                                : photo.category || 'Geral'
+                              const catColor = photo.category === 'gallery' ? 'bg-emerald-600'
+                                : photo.category === 'service' ? 'bg-blue-600'
+                                : 'bg-stone-600'
+                              const catIcon = photo.category === 'gallery' ? '🏥'
+                                : photo.category === 'service' ? '⚙️' : '📷'
+
+                              return (
+                                <div key={photo.id} className="bg-[#F5F1ED] rounded-2xl overflow-hidden border border-[#D4C5B9] flex flex-col justify-between group">
+                                  <div className="relative aspect-[16/10]">
+                                    <img src={photo.url} alt={photo.caption} className="w-full h-full object-cover" />
+                                    
+                                    {/* Badge de categoria — claro, colorido, identificável */}
+                                    <span className={`absolute top-2 left-2 ${catColor} text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm`}>
+                                      <span>{catIcon}</span>
+                                      <span>{catLabel}</span>
+                                    </span>
+
+                                    {/* Botão deletar — aparece no hover */}
+                                    <button
+                                      onClick={() => handleDeletePhoto(photo.id)}
+                                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md hover:bg-red-700"
+                                      title="Excluir foto"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+
+                                  <div className="p-3.5 flex items-center justify-between gap-2">
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-0.5">{catLabel}</p>
+                                      <p className="text-xs font-medium text-[#1A1A1A] truncate">{photo.caption || 'Sem legenda'}</p>
+                                    </div>
+                                    <button
+                                      onClick={() => handleDeletePhoto(photo.id)}
+                                      className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors shrink-0 border border-red-200"
+                                      title="Excluir foto"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              )
+                            })
+                          }
+                        </div>
+
+                        {photos.filter(p => galleryFilter === 'all' || p.category === galleryFilter).length === 0 && (
+                          <div className="text-center py-10 text-stone-400 text-sm">
+                            Nenhuma foto nesta categoria ainda.
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
