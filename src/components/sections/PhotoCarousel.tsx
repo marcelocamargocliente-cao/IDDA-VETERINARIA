@@ -75,19 +75,19 @@ export const PhotoCarousel: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {[
-              { id: 'all', label: 'Todas as Fotos' },
-              { id: 'gallery', label: 'Estrutura & Clínica' },
-              { id: 'service', label: 'Equipamentos & Procedimentos' },
+              { id: 'all', label: 'Todas' },
+              { id: 'gallery', label: 'Estrutura' },
+              { id: 'service', label: 'Procedimentos' },
             ].map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id as any)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all ${
                   selectedCategory === cat.id
                     ? 'bg-[#6B8E6F] text-white shadow-sm'
-                    : 'bg-[#FFFFFF] text-[#4A4A4A] hover:bg-[#D4C5B9]/30 border border-[#D4C5B9]'
+                    : 'bg-[#FFFFFF] text-[#6B6B6B] hover:bg-[#D4C5B9]/40 border border-[#D4C5B9]'
                 }`}
               >
                 {cat.label}
@@ -128,21 +128,12 @@ export const PhotoCarousel: React.FC = () => {
                         loading="lazy"
                       />
                       
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-transparent to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
+                      {/* Overlay leve só no hover */}
+                      <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/20 transition-all duration-300" />
 
-                      <div className="absolute bottom-0 left-0 right-0 p-5 text-white flex items-end justify-between gap-3">
-                        <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#D4C5B9] bg-[#1A1A1A]/80 px-2.5 py-0.5 rounded border border-[#D4C5B9]/40 inline-block mb-1">
-                            {photo.category === 'gallery' ? 'Estrutura' : photo.category === 'service' ? 'Procedimentos' : 'Clínica'}
-                          </span>
-                          <p className="text-xs sm:text-sm font-medium line-clamp-2 text-[#F5F1ED]">
-                            {photo.caption}
-                          </p>
-                        </div>
-
-                        <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 group-hover:bg-[#6B8E6F] transition-colors">
-                          <Maximize2 className="w-4 h-4 text-white" />
-                        </div>
+                      {/* Ícone de expandir — aparece só no hover */}
+                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <Maximize2 className="w-4 h-4 text-[#1A1A1A]" />
                       </div>
                     </div>
                   </div>
