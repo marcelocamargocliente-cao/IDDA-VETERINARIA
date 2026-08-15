@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { imgPresets } from '@/lib/imageUtils'
 import { CLINIC_CONFIG } from '../../config/constants'
 import { supabase } from '../../lib/supabase'
 import { 
@@ -201,10 +202,13 @@ export const Location: React.FC = () => {
             <div className="bg-[#FFFFFF] rounded-3xl overflow-hidden shadow-sm border border-[#D4C5B9]/70 group relative">
               <div className="relative aspect-[16/9] overflow-hidden bg-[#1A1A1A]">
                 <img
-                  src={locationImage}
+                  src={imgPresets.location(locationImage)}
                   alt="Estrutura e Acolhimento IDDA Veterinária"
                   referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  onError={(e) => { e.currentTarget.src = locationImage }}
                 />
                 {locationCaption && (
                   <>
