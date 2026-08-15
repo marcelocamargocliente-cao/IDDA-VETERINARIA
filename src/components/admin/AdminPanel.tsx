@@ -35,6 +35,7 @@ export const AdminPanel: React.FC = () => {
   const [locationPreview, setLocationPreview] = useState<string>('')
   const [locationCaption, setLocationCaption] = useState<string>('')
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'gallery' | 'service' | 'photo'>('all')
+  const [editingCaption, setEditingCaption] = useState<{id: string, value: string} | null>(null)
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -541,15 +542,71 @@ export const AdminPanel: React.FC = () => {
                                   <div className="p-3.5 flex items-center justify-between gap-2">
                                     <div className="flex-1 min-w-0">
                                       <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-0.5">{catLabel}</p>
-                                      <p className="text-xs font-medium text-[#1A1A1A] truncate">{photo.caption || 'Sem legenda'}</p>
+
+                                      {/* Modo edição inline */}
+                                      {editingCaption?.id === photo.id ? (
+                                        <div className="flex items-center gap-1.5 mt-1">
+                                          <input
+                                            autoFocus
+                                            type="text"
+                                            value={editingCaption.value}
+                                            onChange={(e) => setEditingCaption({ id: photo.id, value: e.target.value })}
+                                            onKeyDown={async (e) => {
+                                              if (e.key === 'Enter') {
+                                                await supabaseAdmin.from('photos').update({ caption: editingCaption.value }).eq('id', photo.id)
+                                                showToast('✅ Legenda atualizada!')
+                                                setEditingCaption(null)
+                                                loadAdminData()
+                                              }
+                                              if (e.key === 'Escape') setEditingCaption(null)
+                                            }}
+                                            className="flex-1 text-xs px-2 py-1 border border-[#6B8E6F] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6B8E6F] text-stone-800"
+                                            placeholder="Digite a legenda..."
+                                          />
+                                          <button
+                                            onClick={async () => {
+                                              await supabaseAdmin.from('photos').update({ caption: editingCaption.value }).eq('id', photo.id)
+                                              showToast('✅ Legenda atualizada!')
+                                              setEditingCaption(null)
+                                              loadAdminData()
+                                            }}
+                                            className="w-7 h-7 rounded-lg bg-[#6B8E6F] text-white flex items-center justify-center hover:bg-[#5A7A5F] transition-colors shrink-0"
+                                            title="Salvar"
+                                          >
+                                            <Check className="w-3.5 h-3.5" />
+                                          </button>
+                                          <button
+                                            onClick={() => setEditingCaption(null)}
+                                            className="w-7 h-7 rounded-lg bg-stone-200 text-stone-600 flex items-center justify-center hover:bg-stone-300 transition-colors shrink-0"
+                                            title="Cancelar"
+                                          >
+                                            <X className="w-3.5 h-3.5" />
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <p className="text-xs font-medium text-[#1A1A1A] truncate">{photo.caption || 'Sem legenda'}</p>
+                                      )}
                                     </div>
-                                    <button
-                                      onClick={() => handleDeletePhoto(photo.id)}
-                                      className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors shrink-0 border border-red-200"
-                                      title="Excluir foto"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
+
+                                    {/* Botões Editar + Deletar */}
+                                    {editingCaption?.id !== photo.id && (
+                                      <div className="flex items-center gap-1.5 shrink-0">
+                                        <button
+                                          onClick={() => setEditingCaption({ id: photo.id, value: photo.caption || '' })}
+                                          className="w-8 h-8 rounded-lg bg-stone-100 hover:bg-[#6B8E6F]/10 text-stone-500 hover:text-[#6B8E6F] flex items-center justify-center transition-colors border border-stone-200 hover:border-[#6B8E6F]/30"
+                                          title="Editar legenda"
+                                        >
+                                          <Edit2 className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeletePhoto(photo.id)}
+                                          className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition-colors border border-red-200"
+                                          title="Excluir foto"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               )
