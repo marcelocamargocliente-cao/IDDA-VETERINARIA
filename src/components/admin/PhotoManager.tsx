@@ -320,6 +320,9 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
                   <span className="text-[11px] text-stone-500 mt-0.5">
                     Formatos suportados: JPG, PNG, WebP, GIF — Ferramenta de enquadramento abrirá automaticamente
                   </span>
+                  <span className="inline-flex items-center gap-1 mt-2 bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold px-3 py-1.5 rounded-lg">
+                    📐 Tamanho ideal: 1200 × 900 px  |  Proporção 4:3  |  Foto da clínica, atendimentos ou pets
+                  </span>
                   <input
                     ref={fileInputRef}
                     type="file"
