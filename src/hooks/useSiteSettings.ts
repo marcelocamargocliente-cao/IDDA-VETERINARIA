@@ -126,7 +126,7 @@ export function useSiteSettings() {
         const { data, error } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(fileName, fileToUpload, {
-            cacheControl: '3600',
+            cacheControl: '2592000',
             upsert: true
           })
 
