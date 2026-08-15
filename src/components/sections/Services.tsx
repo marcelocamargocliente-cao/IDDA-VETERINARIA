@@ -1,4 +1,4 @@
-import { imgPresets } from '@/lib/imageUtils'
+import { imgPresets } from '../../lib/imageUtils'
 import React, { useState, useEffect } from 'react'
 import { Sparkles, X, Calendar, Check, ArrowRight, HeartPulse, ImageIcon } from 'lucide-react'
 import { Service } from '../../types'
