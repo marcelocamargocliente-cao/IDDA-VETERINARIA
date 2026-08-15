@@ -1,3 +1,4 @@
+import { imgPresets } from '@/lib/imageUtils'
 import React, { useState, useEffect } from 'react'
 import { Sparkles, X, Calendar, Check, ArrowRight, HeartPulse, ImageIcon } from 'lucide-react'
 import { Service } from '../../types'
@@ -47,12 +48,14 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, onSelect, getService
           </div>
         )}
         <img
-          src={imageUrl}
+          src={imgPresets.service(imageUrl)}
           alt={service.title}
           referrerPolicy="no-referrer"
           onLoad={() => setImageLoaded(true)}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          onError={(e) => { e.currentTarget.src = imageUrl; setImageLoaded(true) }}
           loading="lazy"
+          decoding="async"
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/75 via-transparent to-transparent pointer-events-none" />
         {service.highlight && (
