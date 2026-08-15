@@ -136,7 +136,7 @@ export const PhotoManager: React.FC<PhotoManagerProps> = ({
         const { error: storageError } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(filePath, file, {
-            cacheControl: '3600',
+            cacheControl: '2592000',
             upsert: true
           })
 
