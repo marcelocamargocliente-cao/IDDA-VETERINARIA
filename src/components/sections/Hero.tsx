@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { imgPresets } from '@/lib/imageUtils'
+import { imgPresets } from '../../lib/imageUtils'
 import { Calendar, ArrowRight, Sparkles, Star } from 'lucide-react'
 import { CLINIC_CONFIG } from '../../config/constants'
 import { supabase } from '../../lib/supabase'
