@@ -176,7 +176,23 @@ export const ManageSiteSettings: React.FC = () => {
               />
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 space-y-3">
+              {/* Badge de tamanho recomendado */}
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <span className="text-amber-500 text-base mt-0.5">📐</span>
+                <div>
+                  <span className="text-[11px] font-bold text-amber-800 block">
+                    {activeKey === 'hero_image' && 'Tamanho ideal: 900 × 840 px  |  Proporção: 1:1 ou 9:10'}
+                    {activeKey === 'location_image' && 'Tamanho ideal: 1200 × 675 px  |  Proporção: 16:9'}
+                    {activeKey === 'gallery_featured' && 'Tamanho ideal: 1200 × 675 px  |  Proporção: 16:9'}
+                  </span>
+                  <span className="text-[10px] text-amber-600 block mt-0.5">
+                    {activeKey === 'hero_image' && 'Foto vertical/quadrada — aparece ao lado do texto principal do site'}
+                    {activeKey === 'location_image' && 'Foto horizontal — aparece na seção de Localização'}
+                    {activeKey === 'gallery_featured' && 'Foto horizontal — aparece como destaque na galeria'}
+                  </span>
+                </div>
+              </div>
               <label className="block w-full cursor-pointer bg-white border-2 border-dashed border-verde-500 hover:border-verde-600 rounded-xl p-4 text-center transition-all shadow-2xs hover:bg-verde-50/40">
                 <input
                   type="file"
