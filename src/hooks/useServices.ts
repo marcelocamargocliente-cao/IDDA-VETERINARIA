@@ -53,16 +53,7 @@ const INITIAL_SERVICES: Service[] = [
     active: true,
     order: 5
   },
-  {
-    id: 's6',
-    title: 'Ultrassonografia com Doppler',
-    description: 'Diagnóstico por imagem não invasivo de alta precisão para avaliação detalhada abdominal, torácica e gestacional.',
-    image_url: 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&h=600&fit=crop',
-    icon: 'HeartPulse',
-    highlight: 'Alta Resolução',
-    active: true,
-    order: 6
-  }
+
 ]
 
 const DEFAULT_SERVICE_IMAGES = [
