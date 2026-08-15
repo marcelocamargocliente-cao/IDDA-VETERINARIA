@@ -445,6 +445,9 @@ CREATE POLICY "Services are editable by all" ON services
                     <span className="text-[10px] text-stone-500 mt-0.5">
                       JPG, PNG, WebP ou GIF — Uma ferramenta de corte e zoom abrirá automaticamente!
                     </span>
+                    <span className="inline-flex items-center gap-1 mt-2 bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold px-3 py-1.5 rounded-lg">
+                      📐 Tamanho ideal: 1200 × 675 px  |  Proporção 16:9  |  Foto ilustrativa do serviço
+                    </span>
                     <input
                       ref={fileInputRef}
                       type="file"
