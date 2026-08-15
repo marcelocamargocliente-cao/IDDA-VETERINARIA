@@ -16,7 +16,7 @@ const FALLBACK_PHOTOS: Photo[] = [
 export const PhotoCarousel: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>(FALLBACK_PHOTOS)
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'gallery' | 'service'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'gallery' | 'service' | 'photo'>('all')
   const [activeModalPhoto, setActiveModalPhoto] = useState<Photo | null>(null)
 
   useEffect(() => {
@@ -47,10 +47,13 @@ export const PhotoCarousel: React.FC = () => {
   const countGallery  = photos.filter(p => p.category === 'gallery').length
   const countService  = photos.filter(p => p.category === 'service').length
 
+  const countPhoto    = photos.filter(p => p.category === 'photo').length
+
   const filters = [
-    { id: 'all',     label: 'Todas',         count: countAll },
-    { id: 'gallery', label: 'Estrutura',      count: countGallery },
-    { id: 'service', label: 'Procedimentos',  count: countService },
+    { id: 'all',     label: 'Todas',          count: countAll },
+    { id: 'gallery', label: 'Estrutura',       count: countGallery },
+    { id: 'service', label: 'Procedimentos',   count: countService },
+    { id: 'photo',   label: 'Galeria',         count: countPhoto },
   ]
 
   return (
