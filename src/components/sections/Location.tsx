@@ -19,12 +19,15 @@ import {
 export const Location: React.FC = () => {
   const [copied, setCopied] = useState(false)
   const [locationImage, setLocationImage] = useState('https://images.pexels.com/photos/5998473/pexels-photo-5998473.jpeg?w=800')
+  const [locationCaption, setLocationCaption] = useState('')
 
   useEffect(() => {
     const fetchLocationImg = async () => {
       try {
         const { data } = await supabase.from('site_settings').select('value').eq('key', 'location_image').single()
         if (data?.value) setLocationImage(data.value)
+        const { data: capData } = await supabase.from('site_settings').select('value').eq('key', 'location_caption').single()
+        if (capData?.value) setLocationCaption(capData.value)
       } catch (e) {
         console.error('Error loading location image:', e)
       }
@@ -35,6 +38,9 @@ export const Location: React.FC = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'site_settings' }, (payload: any) => {
         if (payload.new?.key === 'location_image') {
           setLocationImage(payload.new.value)
+        }
+        if (payload.new?.key === 'location_caption') {
+          setLocationCaption(payload.new.value)
         }
       })
       .subscribe()
@@ -200,15 +206,16 @@ export const Location: React.FC = () => {
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-4 left-6 text-white">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-[#D4C5B9] block mb-1">
-                    Estrutura Completa
-                  </span>
-                  <h4 className="font-serif-heading text-xl font-bold">
-                    Pronta para cuidar do seu pet
-                  </h4>
-                </div>
+                {locationCaption && (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/80 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute bottom-4 left-6 right-6 text-white">
+                      <h4 className="font-serif-heading text-xl font-bold drop-shadow-md">
+                        {locationCaption}
+                      </h4>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
