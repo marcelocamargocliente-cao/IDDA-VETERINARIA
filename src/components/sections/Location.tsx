@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { imgPresets } from '@/lib/imageUtils'
+import { imgPresets } from '../../lib/imageUtils'
 import { CLINIC_CONFIG } from '../../config/constants'
 import { supabase } from '../../lib/supabase'
 import { 
