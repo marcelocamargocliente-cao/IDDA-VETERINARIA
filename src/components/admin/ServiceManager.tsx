@@ -152,7 +152,7 @@ export const ServiceManager: React.FC<ServiceManagerProps> = ({
         const { error: storageError } = await supabaseAdmin.storage
           .from('idda-photos')
           .upload(fileName, file, {
-            cacheControl: '3600',
+            cacheControl: '2592000',
             upsert: true
           })
 
