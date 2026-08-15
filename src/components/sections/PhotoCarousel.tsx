@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight, Image as ImageIcon, Maximize2, X } from 'lucide-react'
+import { imgPresets } from '@/lib/imageUtils'
 import { Photo } from '../../types'
 import { supabase } from '../../lib/supabase'
 
@@ -99,7 +100,9 @@ export const PhotoCarousel: React.FC = () => {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="aspect-[4/3] rounded-2xl bg-[#D4C5B9]/40 animate-pulse" />
+              <div key={n} className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#D4C5B9]/30 animate-pulse relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+              </div>
             ))}
           </div>
         ) : filteredPhotos.length === 0 ? (
@@ -121,11 +124,13 @@ export const PhotoCarousel: React.FC = () => {
                       onClick={() => setActiveModalPhoto(photo)}
                     >
                       <img
-                        src={photo.url}
+                        src={imgPresets.galleryThumb(photo.url)}
                         alt={photo.caption || 'Foto IDDA'}
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        onError={(e) => { e.currentTarget.src = photo.url }}
                       />
                       
                       {/* Overlay + legenda — só aparece se tiver caption */}
@@ -188,9 +193,12 @@ export const PhotoCarousel: React.FC = () => {
 
               <div className="aspect-[16/10] bg-black">
                 <img
-                  src={activeModalPhoto.url}
+                  src={imgPresets.galleryFull(activeModalPhoto.url)}
                   alt={activeModalPhoto.caption}
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-contain"
+                  onError={(e) => { e.currentTarget.src = activeModalPhoto.url }}
                 />
               </div>
 
