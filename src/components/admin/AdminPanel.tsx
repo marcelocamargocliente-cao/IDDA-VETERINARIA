@@ -28,6 +28,12 @@ export const AdminPanel: React.FC = () => {
     imageFile: File | null; imagePreview: string
   }>({ open: false, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })
 
+  // Hero e Location - estado de arquivo selecionado antes de salvar
+  const [heroFile, setHeroFile] = useState<File | null>(null)
+  const [heroPreview, setHeroPreview] = useState<string>('')
+  const [locationFile, setLocationFile] = useState<File | null>(null)
+  const [locationPreview, setLocationPreview] = useState<string>('')
+
   // Check URL hash for #admin
   useEffect(() => {
     const handleHashChange = () => {
@@ -458,20 +464,81 @@ export const AdminPanel: React.FC = () => {
                       </div>
 
                       <div className="space-y-4">
+                        {/* Preview atual ou nova */}
                         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-stone-100 border border-[#D4C5B9]">
-                          <img src={heroUrl} alt="Hero Preview" className="w-full h-full object-cover" />
+                          <img
+                            src={heroPreview || heroUrl || ''}
+                            alt="Hero Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          {heroPreview && (
+                            <div className="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                              Nova foto selecionada
+                            </div>
+                          )}
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Selecionar Nova Foto para o Hero</label>
+                        {/* Badge de tamanho */}
+                        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5">
+                          <span className="text-amber-500">📐</span>
+                          <span className="text-[11px] font-bold text-amber-800">Tamanho ideal: 900 × 840 px  |  Proporção 1:1 ou 9:10  |  Foto vertical/quadrada</span>
+                        </div>
+
+                        {/* Seletor de arquivo */}
+                        <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#6B8E6F] hover:border-[#5A7A5F] bg-[#F5F1ED] hover:bg-[#6B8E6F]/5 rounded-2xl p-5 cursor-pointer transition-all">
+                          <Upload className="w-6 h-6 text-[#6B8E6F] mb-2" />
+                          <span className="text-xs font-bold text-stone-800">
+                            {heroFile ? heroFile.name : 'Clique para escolher nova foto do Hero'}
+                          </span>
+                          <span className="text-[11px] text-stone-500 mt-1">JPG, PNG, WebP — máx. 12MB</span>
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={handleHeroUpload}
                             disabled={uploading}
-                            className="w-full text-xs file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#F5F1ED] file:text-[#6B8E6F] hover:file:bg-[#D4C5B9]/40 cursor-pointer"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (!file) return
+                              setHeroFile(file)
+                              const reader = new FileReader()
+                              reader.onload = (ev) => setHeroPreview(ev.target?.result as string)
+                              reader.readAsDataURL(file)
+                            }}
                           />
-                        </div>
+                        </label>
+
+                        {/* Botão Salvar — só aparece quando tem arquivo selecionado */}
+                        {heroFile && (
+                          <button
+                            disabled={uploading}
+                            onClick={async () => {
+                              if (!heroFile) return
+                              try {
+                                setUploading(true)
+                                const publicUrl = await uploadImageToSupabase(heroFile)
+                                const { error } = await supabaseAdmin
+                                  .from('site_settings')
+                                  .upsert({ key: 'hero_image', value: publicUrl }, { onConflict: 'key' })
+                                if (error) throw error
+                                setHeroUrl(publicUrl)
+                                setHeroFile(null)
+                                setHeroPreview('')
+                                showToast('✅ Foto do Hero salva com sucesso!')
+                              } catch (err: any) {
+                                alert(err.message || 'Erro ao salvar Hero')
+                              } finally {
+                                setUploading(false)
+                              }
+                            }}
+                            className="w-full bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md disabled:opacity-60"
+                          >
+                            {uploading ? (
+                              <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Enviando foto...</>
+                            ) : (
+                              <><Save className="w-4 h-4" />Salvar Foto do Hero</>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -678,20 +745,81 @@ export const AdminPanel: React.FC = () => {
                       </div>
 
                       <div className="space-y-4">
+                        {/* Preview atual ou nova */}
                         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-stone-100 border border-[#D4C5B9]">
-                          <img src={locationUrl} alt="Location Preview" className="w-full h-full object-cover" />
+                          <img
+                            src={locationPreview || locationUrl || ''}
+                            alt="Location Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          {locationPreview && (
+                            <div className="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                              Nova foto selecionada
+                            </div>
+                          )}
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Selecionar Nova Foto</label>
+                        {/* Badge de tamanho */}
+                        <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5">
+                          <span className="text-amber-500">📐</span>
+                          <span className="text-[11px] font-bold text-amber-800">Tamanho ideal: 1200 × 675 px  |  Proporção 16:9  |  Foto horizontal da fachada/clínica</span>
+                        </div>
+
+                        {/* Seletor de arquivo */}
+                        <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#6B8E6F] hover:border-[#5A7A5F] bg-[#F5F1ED] hover:bg-[#6B8E6F]/5 rounded-2xl p-5 cursor-pointer transition-all">
+                          <Upload className="w-6 h-6 text-[#6B8E6F] mb-2" />
+                          <span className="text-xs font-bold text-stone-800">
+                            {locationFile ? locationFile.name : 'Clique para escolher nova foto de Localização'}
+                          </span>
+                          <span className="text-[11px] text-stone-500 mt-1">JPG, PNG, WebP — máx. 12MB</span>
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={handleLocationUpload}
                             disabled={uploading}
-                            className="w-full text-xs file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#F5F1ED] file:text-[#6B8E6F] hover:file:bg-[#D4C5B9]/40 cursor-pointer"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (!file) return
+                              setLocationFile(file)
+                              const reader = new FileReader()
+                              reader.onload = (ev) => setLocationPreview(ev.target?.result as string)
+                              reader.readAsDataURL(file)
+                            }}
                           />
-                        </div>
+                        </label>
+
+                        {/* Botão Salvar — só aparece quando tem arquivo selecionado */}
+                        {locationFile && (
+                          <button
+                            disabled={uploading}
+                            onClick={async () => {
+                              if (!locationFile) return
+                              try {
+                                setUploading(true)
+                                const publicUrl = await uploadImageToSupabase(locationFile)
+                                const { error } = await supabaseAdmin
+                                  .from('site_settings')
+                                  .upsert({ key: 'location_image', value: publicUrl }, { onConflict: 'key' })
+                                if (error) throw error
+                                setLocationUrl(publicUrl)
+                                setLocationFile(null)
+                                setLocationPreview('')
+                                showToast('✅ Foto da Localização salva com sucesso!')
+                              } catch (err: any) {
+                                alert(err.message || 'Erro ao salvar Localização')
+                              } finally {
+                                setUploading(false)
+                              }
+                            }}
+                            className="w-full bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md disabled:opacity-60"
+                          >
+                            {uploading ? (
+                              <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Enviando foto...</>
+                            ) : (
+                              <><Save className="w-4 h-4" />Salvar Foto da Localização</>
+                            )}
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
