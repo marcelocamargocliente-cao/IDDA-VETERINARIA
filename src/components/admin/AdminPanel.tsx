@@ -273,21 +273,6 @@ export const AdminPanel: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Admin Trigger Button if not open */}
-      {!isOpen && (
-        <button
-          onClick={() => {
-            setIsOpen(true)
-            window.location.hash = '#admin'
-          }}
-          className="fixed bottom-6 left-6 z-40 bg-[#1A1A1A] hover:bg-[#6B8E6F] text-white p-3.5 rounded-full shadow-2xl transition-all duration-300 group border border-[#D4C5B9]/40 flex items-center gap-2 px-4"
-          title="Painel Administrativo IDDA"
-        >
-          <Lock className="w-4 h-4 text-[#6B8E6F] group-hover:text-white transition-colors" />
-          <span className="text-xs font-bold uppercase tracking-wider">Painel Admin</span>
-        </button>
-      )}
-
       {/* Admin Drawer / Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex justify-end animate-in fade-in duration-200">
