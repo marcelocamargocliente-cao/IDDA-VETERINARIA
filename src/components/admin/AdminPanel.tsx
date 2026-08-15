@@ -34,7 +34,7 @@ export const AdminPanel: React.FC = () => {
   const [locationFile, setLocationFile] = useState<File | null>(null)
   const [locationPreview, setLocationPreview] = useState<string>('')
   const [locationCaption, setLocationCaption] = useState<string>('')
-  const [galleryFilter, setGalleryFilter] = useState<'all' | 'gallery' | 'service'>('all')
+  const [galleryFilter, setGalleryFilter] = useState<'all' | 'gallery' | 'service' | 'photo'>('all')
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -413,8 +413,9 @@ export const AdminPanel: React.FC = () => {
                                 defaultValue="gallery"
                                 className="w-full px-4 py-2.5 rounded-xl border border-[#D4C5B9] text-xs focus:outline-none focus:border-[#6B8E6F] bg-white"
                               >
-                                <option value="gallery">Estrutura & Clínica (Galeria)</option>
+                                <option value="gallery">Estrutura & Clínica</option>
                                 <option value="service">Equipamentos & Procedimentos</option>
+                                <option value="photo">Galeria de Fotos</option>
                               </select>
                             </div>
                           </div>
@@ -439,9 +440,10 @@ export const AdminPanel: React.FC = () => {
                           </h4>
                           <div className="flex flex-wrap gap-1.5">
                             {[
-                              { id: 'all', label: 'Todas', color: 'bg-stone-700 text-white' },
-                              { id: 'gallery', label: '🏥 Estrutura', color: 'bg-emerald-600 text-white' },
+                              { id: 'all',     label: 'Todas',          color: 'bg-stone-700 text-white' },
+                              { id: 'gallery', label: '🏥 Estrutura',    color: 'bg-emerald-600 text-white' },
                               { id: 'service', label: '⚙️ Equipamentos', color: 'bg-blue-600 text-white' },
+                              { id: 'photo',   label: '📷 Galeria',      color: 'bg-purple-600 text-white' },
                             ].map((f) => (
                               <button
                                 key={f.id}
@@ -465,12 +467,15 @@ export const AdminPanel: React.FC = () => {
                             .map((photo) => {
                               const catLabel = photo.category === 'gallery' ? 'Estrutura & Clínica'
                                 : photo.category === 'service' ? 'Equipamentos & Procedimentos'
+                                : photo.category === 'photo' ? 'Galeria de Fotos'
                                 : photo.category || 'Geral'
                               const catColor = photo.category === 'gallery' ? 'bg-emerald-600'
                                 : photo.category === 'service' ? 'bg-blue-600'
+                                : photo.category === 'photo' ? 'bg-purple-600'
                                 : 'bg-stone-600'
                               const catIcon = photo.category === 'gallery' ? '🏥'
-                                : photo.category === 'service' ? '⚙️' : '📷'
+                                : photo.category === 'service' ? '⚙️'
+                                : photo.category === 'photo' ? '📷' : '🖼'
 
                               return (
                                 <div key={photo.id} className="bg-[#F5F1ED] rounded-2xl overflow-hidden border border-[#D4C5B9] flex flex-col justify-between group">
