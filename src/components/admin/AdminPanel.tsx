@@ -23,6 +23,10 @@ export const AdminPanel: React.FC = () => {
   const [heroUrl, setHeroUrl] = useState('')
   const [locationUrl, setLocationUrl] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [newServiceForm, setNewServiceForm] = useState<{
+    open: boolean; title: string; description: string; highlight: string;
+    imageFile: File | null; imagePreview: string
+  }>({ open: false, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -475,24 +479,169 @@ export const AdminPanel: React.FC = () => {
                   {/* TAB 3: SERVIÇOS */}
                   {activeTab === 'services' && (
                     <div className="bg-white p-6 rounded-3xl border border-[#D4C5B9] shadow-sm space-y-6">
-                      <div>
-                        <h4 className="font-serif-heading font-bold text-lg text-[#1A1A1A] mb-1">Gerenciar Fotos dos Serviços</h4>
-                        <p className="text-xs text-[#4A4A4A]">Atualize as imagens ilustrativas de cada serviço oferecido pela clínica.</p>
+                      {/* Header com botão Novo Serviço */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-serif-heading font-bold text-lg text-[#1A1A1A] mb-1">Gerenciar Fotos dos Serviços</h4>
+                          <p className="text-xs text-[#4A4A4A]">Altere fotos, edite ou adicione novos serviços da clínica.</p>
+                        </div>
+                        <button
+                          onClick={() => setNewServiceForm({ open: true, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })}
+                          className="flex items-center gap-2 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-sm"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Novo Serviço
+                        </button>
                       </div>
 
+                      {/* Form de novo serviço */}
+                      {newServiceForm.open && (
+                        <div className="bg-[#F5F1ED] rounded-2xl border border-[#D4C5B9] p-5 space-y-4">
+                          <div className="flex items-center justify-between mb-1">
+                            <h5 className="font-bold text-sm text-[#1A1A1A]">Cadastrar Novo Serviço</h5>
+                            <button onClick={() => setNewServiceForm({ open: false, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })} className="text-stone-400 hover:text-stone-700">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* Preview da foto */}
+                          <div className="relative aspect-[16/9] rounded-xl overflow-hidden bg-stone-200 border border-stone-300">
+                            {newServiceForm.imagePreview ? (
+                              <img src={newServiceForm.imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 text-xs gap-1">
+                                <ImageIcon className="w-8 h-8" />
+                                <span>Nenhuma foto selecionada</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Upload da foto */}
+                          <label className="flex flex-col items-center justify-center border-2 border-dashed border-[#6B8E6F] bg-white rounded-xl p-4 cursor-pointer hover:bg-[#6B8E6F]/5 transition-all">
+                            <Upload className="w-5 h-5 text-[#6B8E6F] mb-1" />
+                            <span className="text-xs font-bold text-stone-800">
+                              {newServiceForm.imageFile ? newServiceForm.imageFile.name : 'Clique para selecionar foto'}
+                            </span>
+                            <span className="text-[10px] text-stone-400 mt-0.5">JPG, PNG, WebP — máx. 12MB</span>
+                            <span className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-lg mt-2 font-bold">
+                              📐 Ideal: 1200 × 675 px | Proporção 16:9
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0]
+                                if (!file) return
+                                const reader = new FileReader()
+                                reader.onload = (ev) => setNewServiceForm(prev => ({ ...prev, imageFile: file, imagePreview: ev.target?.result as string }))
+                                reader.readAsDataURL(file)
+                              }}
+                            />
+                          </label>
+
+                          {/* Título */}
+                          <div>
+                            <label className="block text-xs font-bold text-stone-700 mb-1">Título do Serviço *</label>
+                            <input
+                              type="text"
+                              value={newServiceForm.title}
+                              onChange={(e) => setNewServiceForm(prev => ({ ...prev, title: e.target.value }))}
+                              placeholder="Ex: Acupuntura Veterinária"
+                              className="w-full px-3.5 py-2.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E6F] text-stone-800"
+                            />
+                          </div>
+
+                          {/* Destaque */}
+                          <div>
+                            <label className="block text-xs font-bold text-stone-700 mb-1">Destaque / Badge (opcional)</label>
+                            <input
+                              type="text"
+                              value={newServiceForm.highlight}
+                              onChange={(e) => setNewServiceForm(prev => ({ ...prev, highlight: e.target.value }))}
+                              placeholder="Ex: Novo, 24 Horas, Especialista"
+                              className="w-full px-3.5 py-2.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E6F] text-stone-800"
+                            />
+                          </div>
+
+                          {/* Descrição */}
+                          <div>
+                            <label className="block text-xs font-bold text-stone-700 mb-1">Descrição *</label>
+                            <textarea
+                              rows={3}
+                              value={newServiceForm.description}
+                              onChange={(e) => setNewServiceForm(prev => ({ ...prev, description: e.target.value }))}
+                              placeholder="Descreva o serviço oferecido pela clínica..."
+                              className="w-full px-3.5 py-2.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6B8E6F] text-stone-800 leading-relaxed"
+                            />
+                          </div>
+
+                          {/* Botões */}
+                          <div className="flex gap-3 pt-1">
+                            <button
+                              onClick={() => setNewServiceForm({ open: false, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })}
+                              className="flex-1 bg-stone-200 hover:bg-stone-300 text-stone-700 py-2.5 rounded-xl text-xs font-bold transition-colors"
+                            >
+                              Cancelar
+                            </button>
+                            <button
+                              disabled={uploading || !newServiceForm.title.trim() || !newServiceForm.description.trim()}
+                              onClick={async () => {
+                                if (!newServiceForm.title.trim() || !newServiceForm.description.trim()) return
+                                setUploading(true)
+                                try {
+                                  let imageUrl = ''
+                                  if (newServiceForm.imageFile) {
+                                    const fileName = `services/service-new-${Date.now()}.jpg`
+                                    const { error: upErr } = await supabaseAdmin.storage.from(BUCKET_NAME).upload(fileName, newServiceForm.imageFile, { upsert: true })
+                                    if (!upErr) {
+                                      const { data: urlData } = supabaseAdmin.storage.from(BUCKET_NAME).getPublicUrl(fileName)
+                                      imageUrl = urlData.publicUrl
+                                    }
+                                  }
+                                  const { error } = await supabaseAdmin.from('services').insert([{
+                                    title: newServiceForm.title,
+                                    description: newServiceForm.description,
+                                    highlight: newServiceForm.highlight,
+                                    image_url: imageUrl,
+                                    icon: 'Stethoscope',
+                                    active: true,
+                                    order: services.length + 1,
+                                    order_display: services.length + 1
+                                  }])
+                                  if (error) throw error
+                                  showToast('✅ Novo serviço cadastrado com sucesso!')
+                                  setNewServiceForm({ open: false, title: '', description: '', highlight: '', imageFile: null, imagePreview: '' })
+                                  loadAdminData()
+                                } catch (err: any) {
+                                  showToast('Erro: ' + err.message)
+                                } finally {
+                                  setUploading(false)
+                                }
+                              }}
+                              className="flex-1 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-2.5 rounded-xl text-xs font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                              {uploading ? <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />Salvando...</> : <><Check className="w-4 h-4" />Cadastrar Serviço</>}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Lista de serviços existentes */}
                       <div className="space-y-4">
                         {services.map((service) => (
                           <div key={service.id} className="p-4 bg-[#F5F1ED] rounded-2xl border border-[#D4C5B9] flex flex-col sm:flex-row items-center gap-4">
                             <div className="w-24 h-16 rounded-xl overflow-hidden bg-stone-200 shrink-0">
                               <img src={service.image_url || service.image} alt={service.title} className="w-full h-full object-cover" />
                             </div>
-                            
+
                             <div className="flex-1 min-w-0 text-center sm:text-left">
                               <h5 className="font-bold text-sm text-[#1A1A1A]">{service.title}</h5>
                               <p className="text-xs text-[#4A4A4A] truncate mt-0.5">{service.description}</p>
+                              {service.highlight && <span className="inline-block mt-1 bg-[#6B8E6F]/10 text-[#6B8E6F] text-[10px] font-bold px-2 py-0.5 rounded-full">{service.highlight}</span>}
                             </div>
 
-                            <div className="shrink-0">
+                            <div className="shrink-0 flex items-center gap-2">
                               <label className="inline-flex items-center gap-1.5 bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer transition-colors">
                                 <Upload className="w-3.5 h-3.5" />
                                 <span>Alterar Foto</span>
@@ -506,6 +655,13 @@ export const AdminPanel: React.FC = () => {
                                   }}
                                 />
                               </label>
+                              <button
+                                onClick={() => { if (confirm(`Excluir "${service.title}"?`)) { supabaseAdmin.from('services').delete().eq('id', service.id).then(() => { showToast('Serviço excluído.'); loadAdminData() }) } }}
+                                className="p-2 text-stone-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Excluir serviço"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
                         ))}
