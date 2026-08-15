@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import useEmblaCarousel from 'embla-carousel-react'
-import { ChevronLeft, ChevronRight, Image as ImageIcon, Maximize2, X } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Image as ImageIcon, Maximize2, X } from 'lucide-react'
 import { imgPresets } from '@/lib/imageUtils'
 import { Photo } from '../../types'
 import { supabase } from '../../lib/supabase'
@@ -15,19 +14,16 @@ const FALLBACK_PHOTOS: Photo[] = [
 ]
 
 export const PhotoCarousel: React.FC = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' })
   const [photos, setPhotos] = useState<Photo[]>(FALLBACK_PHOTOS)
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'gallery' | 'service' | 'hero'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'gallery' | 'service'>('all')
   const [activeModalPhoto, setActiveModalPhoto] = useState<Photo | null>(null)
 
   useEffect(() => {
     const fetchPhotos = async () => {
       try {
         const { data } = await supabase.from('photos').select('*').order('order')
-        if (data && data.length > 0) {
-          setPhotos(data)
-        }
+        if (data && data.length > 0) setPhotos(data)
       } catch (err) {
         console.error('Error fetching photos:', err)
       } finally {
@@ -40,29 +36,29 @@ export const PhotoCarousel: React.FC = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'photos' }, fetchPhotos)
       .subscribe()
 
-    return () => {
-      supabase.removeChannel(channel)
-    }
+    return () => { supabase.removeChannel(channel) }
   }, [])
 
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev()
-  }, [emblaApi])
+  const filteredPhotos = photos.filter(p =>
+    selectedCategory === 'all' || p.category === selectedCategory
+  )
 
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext()
-  }, [emblaApi])
+  const countAll      = photos.length
+  const countGallery  = photos.filter(p => p.category === 'gallery').length
+  const countService  = photos.filter(p => p.category === 'service').length
 
-  const filteredPhotos = photos.filter(p => {
-    if (selectedCategory === 'all') return true
-    return p.category === selectedCategory
-  })
+  const filters = [
+    { id: 'all',     label: 'Todas',         count: countAll },
+    { id: 'gallery', label: 'Estrutura',      count: countGallery },
+    { id: 'service', label: 'Procedimentos',  count: countService },
+  ]
 
   return (
-    <section id="galeria" className="py-20 sm:py-24 bg-[#F5F1ED] overflow-hidden border-t border-[#D4C5B9]/60">
+    <section id="galeria" className="py-20 sm:py-24 bg-[#F5F1ED] border-t border-[#D4C5B9]/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="space-y-3">
             <span className="text-xs font-semibold uppercase tracking-widest text-[#8B7355] bg-[#FFFFFF] px-4 py-1.5 rounded-full inline-block border border-[#D4C5B9] shadow-2xs">
               Conheça Nossa Estrutura
@@ -72,34 +68,37 @@ export const PhotoCarousel: React.FC = () => {
               <span className="italic text-[#6B8E6F] font-normal">Momentos de cuidado e amor</span>
             </h2>
             <p className="text-[#4A4A4A] text-sm sm:text-base max-w-xl font-normal leading-relaxed">
-              Ambientes climatizados, equipamentos modernos e uma recepção acolhedora preparada para oferecer máximo conforto aos animais e seus tutores.
+              Ambientes climatizados, equipamentos modernos e uma recepção acolhedora preparada para oferecer máximo conforto.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
-            {[
-              { id: 'all', label: 'Todas' },
-              { id: 'gallery', label: 'Estrutura' },
-              { id: 'service', label: 'Procedimentos' },
-            ].map((cat) => (
+          {/* Filtros com contador */}
+          <div className="flex flex-wrap gap-2">
+            {filters.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id as any)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-semibold transition-all ${
                   selectedCategory === cat.id
                     ? 'bg-[#6B8E6F] text-white shadow-sm'
                     : 'bg-[#FFFFFF] text-[#6B6B6B] hover:bg-[#D4C5B9]/40 border border-[#D4C5B9]'
                 }`}
               >
                 {cat.label}
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                  selectedCategory === cat.id ? 'bg-white/25 text-white' : 'bg-[#D4C5B9]/40 text-[#8B7355]'
+                }`}>
+                  {cat.count}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
+        {/* Grid de fotos */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((n) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1,2,3,4,5,6,7,8].map((n) => (
               <div key={n} className="aspect-[4/3] rounded-2xl overflow-hidden bg-[#D4C5B9]/30 animate-pulse relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
               </div>
@@ -111,76 +110,53 @@ export const PhotoCarousel: React.FC = () => {
             <p className="font-medium">Nenhuma foto cadastrada nesta categoria.</p>
           </div>
         ) : (
-          <div className="relative">
-            <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
-              <div className="flex -ml-4">
-                {filteredPhotos.map((photo) => (
-                  <div 
-                    key={photo.id} 
-                    className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4"
-                  >
-                    <div 
-                      className="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#1A1A1A] cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-[#D4C5B9]"
-                      onClick={() => setActiveModalPhoto(photo)}
-                    >
-                      <img
-                        src={imgPresets.galleryThumb(photo.url)}
-                        alt={photo.caption || 'Foto IDDA'}
-                        referrerPolicy="no-referrer"
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        onError={(e) => { e.currentTarget.src = photo.url }}
-                      />
-                      
-                      {/* Overlay + legenda — só aparece se tiver caption */}
-                      {photo.caption ? (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <p className="text-xs font-semibold leading-snug drop-shadow-md">
-                              {photo.caption}
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/15 transition-all duration-300" />
-                      )}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredPhotos.map((photo, idx) => (
+              <div
+                key={photo.id}
+                onClick={() => setActiveModalPhoto(photo)}
+                className={`group relative rounded-2xl overflow-hidden cursor-pointer bg-[#1A1A1A] shadow-sm hover:shadow-xl transition-all duration-300 border border-[#D4C5B9]/60 hover:border-[#6B8E6F]/50
+                  ${idx === 0 ? 'col-span-2 row-span-2 aspect-square' : 'aspect-[4/3]'}
+                `}
+              >
+                <img
+                  src={imgPresets.galleryThumb(photo.url)}
+                  alt={photo.caption || 'Foto IDDA'}
+                  referrerPolicy="no-referrer"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => { e.currentTarget.src = photo.url }}
+                />
 
-                      {/* Ícone de expandir — aparece só no hover */}
-                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
-                        <Maximize2 className="w-3.5 h-3.5 text-[#1A1A1A]" />
-                      </div>
+                {/* Legenda — só aparece no hover se preenchida */}
+                {photo.caption ? (
+                  <>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <p className="text-xs font-semibold leading-snug drop-shadow-md">{photo.caption}</p>
                     </div>
-                  </div>
-                ))}
+                  </>
+                ) : (
+                  <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/15 transition-all duration-300" />
+                )}
+
+                {/* Ícone expandir */}
+                <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
+                  <Maximize2 className="w-3.5 h-3.5 text-[#1A1A1A]" />
+                </div>
               </div>
-            </div>
-
-            <button
-              onClick={scrollPrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FFFFFF]/90 backdrop-blur-md shadow-md border border-[#D4C5B9] flex items-center justify-center text-[#1A1A1A] hover:bg-[#6B8E6F] hover:text-white transition-all z-10"
-              aria-label="Anterior"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            <button
-              onClick={scrollNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-[#FFFFFF]/90 backdrop-blur-md shadow-md border border-[#D4C5B9] flex items-center justify-center text-[#1A1A1A] hover:bg-[#6B8E6F] hover:text-white transition-all z-10"
-              aria-label="Próximo"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
+            ))}
           </div>
         )}
 
+        {/* Modal lightbox */}
         {activeModalPhoto && (
-          <div 
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          <div
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
             onClick={() => setActiveModalPhoto(null)}
           >
-            <div 
+            <div
               className="relative max-w-4xl w-full bg-[#1A1A1A] rounded-2xl overflow-hidden border border-[#D4C5B9]/30 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
@@ -202,10 +178,12 @@ export const PhotoCarousel: React.FC = () => {
                 />
               </div>
 
-              <div className="p-6 bg-[#1A1A1A] text-white border-t border-[#333333]">
-                <h4 className="font-serif-heading font-semibold text-lg mb-1">{activeModalPhoto.caption}</h4>
-                <p className="text-xs text-[#D4C5B9]">IDDA Veterinária • Estrada do Tutóia, 520 - Cosmos, RJ</p>
-              </div>
+              {activeModalPhoto.caption && (
+                <div className="p-5 bg-[#1A1A1A] text-white border-t border-[#333333]">
+                  <p className="text-sm font-semibold">{activeModalPhoto.caption}</p>
+                  <p className="text-xs text-[#D4C5B9] mt-1">IDDA Veterinária</p>
+                </div>
+              )}
             </div>
           </div>
         )}
