@@ -196,6 +196,22 @@ export const AdminPanel: React.FC = () => {
       if (error) throw error
 
       showToast('Foto adicionada à galeria com sucesso!')
+      // Som de sucesso - acorde feliz Dó-Mi-Sol
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+        const playNote = (freq: number, start: number, dur: number) => {
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.connect(gain); gain.connect(ctx.destination)
+          osc.frequency.value = freq; osc.type = 'sine'
+          gain.gain.setValueAtTime(0.3, ctx.currentTime + start)
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur)
+          osc.start(ctx.currentTime + start); osc.stop(ctx.currentTime + start + dur)
+        }
+        playNote(523, 0, 0.15)
+        playNote(659, 0.15, 0.15)
+        playNote(784, 0.3, 0.3)
+      } catch {}
       if (e.currentTarget) e.currentTarget.reset()
       loadAdminData()
     } catch (err: any) {
@@ -423,10 +439,34 @@ export const AdminPanel: React.FC = () => {
                           <button
                             type="submit"
                             disabled={uploading}
-                            className="w-full bg-[#6B8E6F] hover:bg-[#5A7A5F] text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2"
+                            className={`w-full text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider shadow-sm transition-all flex items-center justify-center gap-2 relative overflow-hidden ${
+                              uploading
+                                ? 'bg-[#5A7A5F] cursor-not-allowed'
+                                : 'bg-[#6B8E6F] hover:bg-[#5A7A5F]'
+                            }`}
                           >
-                            <Upload className="w-4 h-4" />
-                            <span>{uploading ? 'Enviando para o Supabase...' : 'Enviar e Adicionar Foto'}</span>
+                            {/* Barra de progresso animada */}
+                            {uploading && (
+                              <div className="absolute inset-0 overflow-hidden rounded-xl">
+                                <div className="h-full bg-white/20 animate-[upload-progress_2s_ease-in-out_infinite]" style={{width: '40%', animation: 'uploadProgress 1.5s ease-in-out infinite'}} />
+                              </div>
+                            )}
+                            <div className="relative flex items-center gap-2">
+                              {uploading ? (
+                                <>
+                                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                                  </svg>
+                                  <span>Enviando Sua Imagem...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="w-4 h-4" />
+                                  <span>Enviar e Adicionar Foto</span>
+                                </>
+                              )}
+                            </div>
                           </button>
                         </form>
                       </div>
