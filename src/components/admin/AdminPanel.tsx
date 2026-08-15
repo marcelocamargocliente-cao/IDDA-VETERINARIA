@@ -33,6 +33,7 @@ export const AdminPanel: React.FC = () => {
   const [heroPreview, setHeroPreview] = useState<string>('')
   const [locationFile, setLocationFile] = useState<File | null>(null)
   const [locationPreview, setLocationPreview] = useState<string>('')
+  const [locationCaption, setLocationCaption] = useState<string>('')
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -90,6 +91,8 @@ export const AdminPanel: React.FC = () => {
         if (hero) setHeroUrl(hero.value)
         const loc = settingsData.find(s => s.key === 'location_image')
         if (loc) setLocationUrl(loc.value)
+        const cap = settingsData.find(s => s.key === 'location_caption')
+        if (cap) setLocationCaption(cap.value || '')
       }
     } catch (err) {
       console.error('Error loading admin data:', err)
@@ -820,6 +823,46 @@ export const AdminPanel: React.FC = () => {
                             )}
                           </button>
                         )}
+
+                        {/* Campo de Legenda da foto */}
+                        <div className="border-t border-[#D4C5B9] pt-5 space-y-3">
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-2">
+                              Legenda da Foto (texto sobre a imagem)
+                            </label>
+                            <p className="text-[11px] text-stone-500 mb-3">
+                              Este texto aparece sobreposto na parte inferior da foto. Deixe vazio para não exibir legenda.
+                            </p>
+                            <input
+                              type="text"
+                              value={locationCaption}
+                              onChange={(e) => setLocationCaption(e.target.value)}
+                              placeholder="Ex: Pronta para cuidar do seu pet"
+                              className="w-full px-4 py-3 text-sm bg-white border border-[#D4C5B9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6B8E6F] text-stone-800"
+                            />
+                          </div>
+                          <button
+                            disabled={uploading}
+                            onClick={async () => {
+                              try {
+                                setUploading(true)
+                                const { error } = await supabaseAdmin
+                                  .from('site_settings')
+                                  .upsert({ key: 'location_caption', value: locationCaption }, { onConflict: 'key' })
+                                if (error) throw error
+                                showToast('✅ Legenda salva com sucesso!')
+                              } catch (err: any) {
+                                alert(err.message || 'Erro ao salvar legenda')
+                              } finally {
+                                setUploading(false)
+                              }
+                            }}
+                            className="w-full bg-stone-700 hover:bg-stone-800 text-white py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+                          >
+                            <Save className="w-4 h-4" />
+                            Salvar Legenda
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
