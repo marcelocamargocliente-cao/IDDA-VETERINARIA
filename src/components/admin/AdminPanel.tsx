@@ -36,6 +36,13 @@ export const AdminPanel: React.FC = () => {
   const [locationCaption, setLocationCaption] = useState<string>('')
   const [galleryFilter, setGalleryFilter] = useState<'all' | 'gallery' | 'service' | 'photo'>('all')
   const [editingCaption, setEditingCaption] = useState<{id: string, value: string} | null>(null)
+  const [selectedGalleryCategory, setSelectedGalleryCategory] = useState<string>('gallery')
+
+  const categoryProportions: Record<string, {size: string, ratio: string, tip: string}> = {
+    gallery: { size: '1200 × 900 px', ratio: '4:3', tip: 'Foto horizontal da clínica ou estrutura' },
+    service: { size: '1200 × 675 px', ratio: '16:9', tip: 'Foto horizontal de equipamento ou procedimento' },
+    photo:   { size: '1080 × 1080 px', ratio: '1:1', tip: 'Foto quadrada para galeria geral' },
+  }
 
   // Check URL hash for #admin
   useEffect(() => {
@@ -400,41 +407,56 @@ export const AdminPanel: React.FC = () => {
                         </h4>
 
                         <form onSubmit={handleAddPhoto} className="space-y-4">
+                          {/* Categoria PRIMEIRO — define a proporção */}
                           <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Arquivo de Imagem</label>
-                            <input
-                              type="file"
-                              name="photo_file"
-                              accept="image/*"
-                              required
-                              className="w-full text-xs text-[#4file] file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#F5F1ED] file:text-[#6B8E6F] hover:file:bg-[#D4C5B9]/40 cursor-pointer"
-                            />
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Categoria</label>
+                            <select
+                              name="category"
+                              value={selectedGalleryCategory}
+                              onChange={(e) => setSelectedGalleryCategory(e.target.value)}
+                              className="w-full px-4 py-2.5 rounded-xl border border-[#D4C5B9] text-xs focus:outline-none focus:border-[#6B8E6F] bg-white"
+                            >
+                              <option value="gallery">Estrutura & Clínica</option>
+                              <option value="service">Equipamentos & Procedimentos</option>
+                              <option value="photo">Galeria de Fotos</option>
+                            </select>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Legenda / Descrição</label>
+                          {/* Input de arquivo com proporção dinâmica */}
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Arquivo de Imagem</label>
+                            <div className="relative">
                               <input
-                                type="text"
-                                name="caption"
-                                placeholder="Ex: Recepção e Sala de Espera"
+                                type="file"
+                                name="photo_file"
+                                accept="image/*"
                                 required
-                                className="w-full px-4 py-2.5 rounded-xl border border-[#D4C5B9] text-xs focus:outline-none focus:border-[#6B8E6F]"
+                                className="w-full text-xs file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#F5F1ED] file:text-[#6B8E6F] hover:file:bg-[#D4C5B9]/40 cursor-pointer border border-[#D4C5B9] rounded-xl py-2 px-3"
                               />
                             </div>
-
-                            <div>
-                              <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Categoria</label>
-                              <select
-                                name="category"
-                                defaultValue="gallery"
-                                className="w-full px-4 py-2.5 rounded-xl border border-[#D4C5B9] text-xs focus:outline-none focus:border-[#6B8E6F] bg-white"
-                              >
-                                <option value="gallery">Estrutura & Clínica</option>
-                                <option value="service">Equipamentos & Procedimentos</option>
-                                <option value="photo">Galeria de Fotos</option>
-                              </select>
+                            {/* Badge de proporção — muda com a categoria */}
+                            <div className="mt-2 flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                              <span className="text-amber-500 text-sm">📐</span>
+                              <div>
+                                <span className="text-[11px] font-bold text-amber-800">
+                                  {categoryProportions[selectedGalleryCategory]?.size} — Proporção {categoryProportions[selectedGalleryCategory]?.ratio}
+                                </span>
+                                <span className="text-[10px] text-amber-600 block">
+                                  {categoryProportions[selectedGalleryCategory]?.tip}
+                                </span>
+                              </div>
                             </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-1">Legenda / Descrição</label>
+                            <input
+                              type="text"
+                              name="caption"
+                              placeholder="Ex: Recepção e Sala de Espera"
+                              required
+                              className="w-full px-4 py-2.5 rounded-xl border border-[#D4C5B9] text-xs focus:outline-none focus:border-[#6B8E6F]"
+                            />
                           </div>
 
                           <button
