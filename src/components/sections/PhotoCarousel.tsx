@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Image as ImageIcon, Maximize2, X } from 'lucide-react'
-import { imgPresets } from '@/lib/imageUtils'
+import { imgPresets } from '../../lib/imageUtils'
 import { Photo } from '../../types'
 import { supabase } from '../../lib/supabase'
 
