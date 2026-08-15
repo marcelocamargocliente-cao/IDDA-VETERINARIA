@@ -128,12 +128,23 @@ export const PhotoCarousel: React.FC = () => {
                         loading="lazy"
                       />
                       
-                      {/* Overlay leve só no hover */}
-                      <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/20 transition-all duration-300" />
+                      {/* Overlay + legenda — só aparece se tiver caption */}
+                      {photo.caption ? (
+                        <>
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4 text-white translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <p className="text-xs font-semibold leading-snug drop-shadow-md">
+                              {photo.caption}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/15 transition-all duration-300" />
+                      )}
 
                       {/* Ícone de expandir — aparece só no hover */}
-                      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
-                        <Maximize2 className="w-4 h-4 text-[#1A1A1A]" />
+                      <div className="absolute top-3 right-3 w-7 h-7 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100">
+                        <Maximize2 className="w-3.5 h-3.5 text-[#1A1A1A]" />
                       </div>
                     </div>
                   </div>
