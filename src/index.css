@@ -48,3 +48,37 @@
   50%  { transform: translateX(150%); }
   100% { transform: translateX(-100%); }
 }
+
+/* ── Animações Hero ─────────────────────────────── */
+
+/* Cursor piscando do typewriter */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.animate-blink { animation: blink 0.9s step-end infinite; }
+
+/* Partículas flutuantes */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: 0.4; }
+  50%       { transform: translateY(-18px) scale(1.3); opacity: 0.7; }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+/* Pulso lento do fundo */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.08); }
+}
+.animate-pulse-slow { animation: pulse-slow 6s ease-in-out infinite; }
+
+/* ── Parallax ao rolar ─────────────────────────── */
+.parallax-img {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* ── Botões hover profissional ─────────────────── */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
