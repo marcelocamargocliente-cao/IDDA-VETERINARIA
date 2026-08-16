@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Navbar } from './components/layout/Navbar'
 import { Footer } from './components/layout/Footer'
 import { Hero } from './components/sections/Hero'
@@ -13,6 +13,19 @@ import { WhatsAppButton } from './components/sections/WhatsAppButton'
 import { AdminPanel } from './components/admin/AdminPanel'
 
 export default function App() {
+  // Parallax ao rolar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const heroImg = document.querySelector('.hero-parallax') as HTMLElement
+      if (heroImg) {
+        heroImg.style.transform = `translateY(${scrollY * 0.12}px)`
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const handleOpenAdmin = () => {
     window.location.hash = '#admin'
   }
